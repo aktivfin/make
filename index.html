@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAKE — Сайты · Автоматизация · ИИ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Onest:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #070709;
+    --surface: #0e0e12;
+    --border: #1c1c22;
+    --accent1: #ff3c00;
+    --accent2: #00e5a0;
+    --accent3: #6c6cff;
+    --text: #ede9e0;
+    --muted: #707070;
+    --muted2: #9a9a9a;
+    --card: #0f0f13;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Onest', sans-serif;
+    font-weight: 400;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── CURSOR ── */
+  .cur { width: 10px; height: 10px; background: var(--accent1); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: transform .15s, background .2s; }
+  .cur-ring { width: 34px; height: 34px; border: 1px solid rgba(255,60,0,.35); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width .2s, height .2s; }
+  body:hover .cur { opacity: 1; }
+
+  /* ── NAV ── */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; padding: 22px 52px; transition: all .4s; }
+  nav.scrolled { background: rgba(7,7,9,.97); border-bottom: 1px solid var(--border); backdrop-filter: blur(16px); }
+  .logo { font-family: 'Bebas Neue'; font-size: 26px; letter-spacing: 5px; color: var(--text); text-decoration: none; }
+  .logo em { color: var(--accent1); font-style: normal; }
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+  .nav-links a { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color .2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-btn { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; padding: 11px 24px; border: 1px solid var(--accent1); color: var(--accent1); text-decoration: none; transition: all .2s; }
+  .nav-btn:hover { background: var(--accent1); color: #000; }
+
+  /* ── HERO ── */
+  .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 52px 88px; position: relative; overflow: hidden; }
+  .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,60,0,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,60,0,.035) 1px, transparent 1px); background-size: 64px 64px; }
+  .hero-glow { position: absolute; top: -20%; left: -10%; width: 60%; height: 80%; background: radial-gradient(ellipse, rgba(255,60,0,.06) 0%, transparent 65%); pointer-events: none; }
+  .hero-bg-num { position: absolute; right: -2%; bottom: -5%; font-family: 'Bebas Neue'; font-size: 32vw; color: transparent; -webkit-text-stroke: 1px rgba(255,60,0,.045); line-height: 1; user-select: none; pointer-events: none; }
+
+  .hero-eyebrow { font-family: 'Space Mono'; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent1); margin-bottom: 28px; opacity: 0; animation: fu .8s .2s forwards; display: flex; align-items: center; gap: 14px; }
+  .hero-eyebrow::before { content: ''; display: block; width: 32px; height: 1px; background: var(--accent1); }
+
+  .hero-h1 { font-family: 'Bebas Neue'; font-size: clamp(80px, 11vw, 172px); line-height: .88; letter-spacing: -2px; opacity: 0; animation: fu .9s .35s forwards; }
+  .hero-h1 .red { color: var(--accent1); }
+  .hero-h1 .outline { color: transparent; -webkit-text-stroke: 1px var(--text); }
+
+  .hero-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 64px; opacity: 0; animation: fu .8s .65s forwards; }
+  .hero-sub { max-width: 440px; font-size: 17px; line-height: 1.75; color: var(--muted2); }
+  .hero-sub strong { color: var(--text); font-weight: 600; }
+
+  .hero-nums { display: flex; gap: 52px; }
+  .hn-item { text-align: right; }
+  .hn-val { font-family: 'Bebas Neue'; font-size: 52px; line-height: 1; color: var(--text); }
+  .hn-label { font-family: 'Space Mono'; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+
+  .hero-scroll { position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; opacity: 0; animation: fu .8s 1.3s forwards; }
+  .hero-scroll span { font-family: 'Space Mono'; font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); }
+  .hero-scroll-line { width: 1px; height: 52px; background: linear-gradient(var(--accent1), transparent); animation: pulse 2s infinite; }
+
+  /* ── TICKER ── */
+  .ticker-wrap { overflow: hidden; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 13px 0; background: #08080b; }
+  .ticker { display: flex; animation: tick 22s linear infinite; white-space: nowrap; }
+  .ticker-item { display: flex; align-items: center; gap: 28px; padding: 0 36px; font-family: 'Bebas Neue'; font-size: 15px; letter-spacing: 3px; color: var(--muted); }
+  .ticker-item em { color: var(--accent1); font-style: normal; }
+
+  /* ── SHARED ── */
+  .sec-num { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .sec-num::after { content: ''; display: block; width: 24px; height: 1px; background: var(--border); }
+  .sec-h { font-family: 'Bebas Neue'; font-size: clamp(52px, 6.5vw, 100px); line-height: .92; letter-spacing: -1px; }
+
+  .divider { height: 1px; background: var(--border); margin: 0 52px; }
+
+  .btn-r { display: inline-block; font-family: 'Space Mono'; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 16px 38px; background: var(--accent1); color: #000; text-decoration: none; font-weight: 700; border: none; cursor: none; transition: all .2s; }
+  .btn-r:hover { background: #fff; transform: translateY(-2px); }
+  .btn-o { display: inline-block; font-family: 'Space Mono'; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 16px 38px; border: 1px solid rgba(255,255,255,.2); color: var(--text); text-decoration: none; cursor: none; transition: all .2s; }
+  .btn-o:hover { border-color: var(--text); background: var(--text); color: #000; }
+
+  /* ── SECTION 1: SITES ── */
+  #sites { padding: 128px 52px; position: relative; }
+
+  .s1-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 72px; }
+  .s1-header .sec-h em { color: var(--accent1); font-style: normal; }
+  .s1-intro { max-width: 380px; }
+  .s1-intro p { font-size: 16px; line-height: 1.8; color: var(--muted2); }
+  .s1-intro p strong { color: var(--text); font-weight: 600; }
+
+  /* Pain cards */
+  .pain-head { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent1); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  .pain-head::after { content: ''; flex: 1; height: 1px; background: rgba(255,60,0,.2); max-width: 120px; }
+
+  .pain-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; background: var(--border); margin-bottom: 2px; }
+  .pain-card { background: var(--card); padding: 36px 30px; border-top: 2px solid transparent; transition: all .25s; }
+  .pain-card:hover { background: #141418; border-top-color: var(--accent1); }
+  .pain-card-ico { width: 36px; height: 36px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; }
+  .pain-card-ico svg { width: 100%; height: 100%; }
+  .pain-card-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; color: var(--text); }
+  .pain-card-text { font-size: 13.5px; line-height: 1.75; color: var(--muted2); }
+
+  /* Quote callout */
+  .callout { background: rgba(255,60,0,.06); border-left: 2px solid var(--accent1); padding: 24px 32px; margin: 64px 0; }
+  .callout-text { font-size: 22px; line-height: 1.5; color: var(--text); font-weight: 300; }
+  .callout-text strong { color: var(--accent1); font-weight: 700; }
+
+  /* Compare */
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: var(--border); }
+  .compare-col { background: var(--card); padding: 44px 40px; }
+  .compare-col.win { background: #0c1810; border: 1px solid rgba(0,229,160,.15); position: relative; }
+  .win-badge { position: absolute; top: -13px; left: 40px; background: var(--accent2); color: #000; font-family: 'Space Mono'; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; padding: 5px 14px; font-weight: 700; }
+  .compare-title { font-family: 'Bebas Neue'; font-size: 26px; letter-spacing: 1px; margin-bottom: 32px; color: var(--muted2); }
+  .compare-col.win .compare-title { color: var(--text); }
+  .c-list { list-style: none; display: flex; flex-direction: column; gap: 0; }
+  .c-list li { display: flex; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--border); font-size: 14px; line-height: 1.6; color: var(--muted2); }
+  .c-list li:last-child { border-bottom: none; }
+  .c-list li strong { color: var(--text); font-weight: 500; }
+  .c-ico { flex-shrink: 0; width: 16px; height: 16px; margin-top: 2px; display: flex; align-items: center; justify-content: center; }
+
+  /* Price */
+  .price-bar { background: var(--card); border: 1px solid var(--border); padding: 52px; display: flex; justify-content: space-between; align-items: center; gap: 40px; margin-top: 2px; }
+  .price-left {}
+  .price-label2 { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+  .price-big { font-family: 'Bebas Neue'; font-size: 88px; line-height: 1; color: var(--accent2); }
+  .price-big span { font-size: 34px; color: var(--muted); }
+  .price-note { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .price-list { display: flex; flex-direction: column; gap: 10px; }
+  .price-li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text); }
+  .price-li::before { content: '→'; color: var(--accent2); font-family: 'Space Mono'; font-size: 12px; }
+
+  /* ── SECTION 2: N8N ── */
+  #automation { padding: 128px 52px; background: #07070b; position: relative; overflow: hidden; }
+  .auto-glow { position: absolute; right: -10%; top: 20%; width: 50%; height: 60%; background: radial-gradient(ellipse, rgba(108,108,255,.05) 0%, transparent 65%); pointer-events: none; }
+  .s2-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px; position: relative; }
+  .s2-header .sec-h em { color: var(--accent3); font-style: normal; }
+  .s2-intro { max-width: 380px; font-size: 16px; line-height: 1.8; color: var(--muted2); }
+  .s2-intro strong { color: var(--text); font-weight: 600; }
+
+  /* ROI strip */
+  .roi-bar { display: flex; gap: 0; background: var(--border); margin-bottom: 2px; }
+  .roi-cell { flex: 1; background: rgba(108,108,255,.07); border: 1px solid rgba(108,108,255,.12); padding: 32px 36px; }
+  .roi-val { font-family: 'Bebas Neue'; font-size: 56px; line-height: 1; color: var(--text); }
+  .roi-desc { font-size: 13px; color: var(--muted2); margin-top: 6px; line-height: 1.5; }
+
+  /* Use cases */
+  .uc-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 2px; background: var(--border); margin-bottom: 2px; }
+  .uc-item { background: #09090d; padding: 40px 36px; display: flex; gap: 24px; position: relative; overflow: hidden; transition: background .2s; }
+  .uc-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent3); transform: scaleY(0); transition: transform .35s; transform-origin: bottom; }
+  .uc-item:hover { background: #0d0d14; }
+  .uc-item:hover::before { transform: scaleY(1); }
+  .uc-n { font-family: 'Bebas Neue'; font-size: 52px; color: rgba(108,108,255,.12); line-height: 1; flex-shrink: 0; width: 48px; }
+  .uc-body {}
+  .uc-title { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
+  .uc-text { font-size: 13.5px; line-height: 1.75; color: var(--muted2); }
+  .uc-result { margin-top: 14px; font-family: 'Space Mono'; font-size: 10px; letter-spacing: 1px; color: var(--accent3); text-transform: uppercase; }
+
+  /* Flow */
+  .flow-wrap { background: #09090d; border: 1px solid var(--border); padding: 52px; margin-bottom: 2px; }
+  .flow-label { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent3); margin-bottom: 36px; }
+  .flow-row { display: flex; align-items: center; flex-wrap: wrap; gap: 0; }
+  .flow-node { background: var(--card); border: 1px solid var(--border); padding: 18px 22px; min-width: 140px; text-align: center; flex-shrink: 0; transition: border-color .2s; }
+  .flow-node:hover { border-color: var(--accent3); }
+  .flow-node.t { border-color: rgba(108,108,255,.3); }
+  .flow-node.r { border-color: rgba(0,229,160,.3); }
+  .flow-node-ico { margin-bottom: 8px; }
+  /* SVG icons in flow */
+  .flow-node-ico svg { width: 22px; height: 22px; }
+  .flow-node-title { font-size: 12px; font-weight: 600; }
+  .flow-node-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .flow-arr { font-family: 'Space Mono'; font-size: 20px; color: var(--accent3); padding: 0 10px; flex-shrink: 0; opacity: .5; }
+
+  /* Auto price */
+  .auto-price { background: #09090d; border: 1px solid rgba(108,108,255,.18); padding: 52px; display: flex; justify-content: space-between; align-items: center; gap: 40px; }
+  .auto-price-big { font-family: 'Bebas Neue'; font-size: 88px; line-height: 1; color: var(--accent3); }
+  .auto-price-big span { font-size: 34px; color: var(--muted); }
+
+  /* ── SECTION 3: ASSISTANT ── */
+  #assistant { padding: 128px 52px; position: relative; overflow: hidden; }
+  .ai-glow { position: absolute; left: -5%; bottom: 10%; width: 40%; height: 50%; background: radial-gradient(ellipse, rgba(255,60,0,.04) 0%, transparent 65%); pointer-events: none; }
+  .s3-header { margin-bottom: 80px; }
+  .s3-header .sec-h em { color: var(--accent2); font-style: normal; }
+  .s3-hook { font-size: 20px; line-height: 1.7; color: var(--muted2); max-width: 700px; margin-top: 28px; }
+  .s3-hook strong { color: var(--text); font-weight: 600; }
+
+  /* VS */
+  .vs-wrap { display: grid; grid-template-columns: 1fr 60px 1fr; gap: 0; background: var(--border); margin-bottom: 2px; }
+  .vs-col { background: var(--card); padding: 52px 44px; }
+  .vs-col.lose { background: #0b0b0b; }
+  .vs-col.win2 { background: #0b1410; }
+  .vs-who { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 28px; }
+  .vs-who.bad { color: var(--accent1); }
+  .vs-who.good { color: var(--accent2); }
+  .vs-steps { display: flex; flex-direction: column; gap: 0; }
+  .vs-step { display: flex; gap: 18px; }
+  .vs-step-track { display: flex; flex-direction: column; align-items: center; width: 16px; flex-shrink: 0; }
+  .vs-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent1); margin-top: 5px; flex-shrink: 0; }
+  .vs-dot.g { background: var(--accent2); }
+  .vs-line { width: 1px; background: var(--border); flex: 1; margin: 4px 0; }
+  .vs-step-body { padding-bottom: 26px; flex: 1; }
+  .vs-step-title { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.4; }
+  .vs-step-time { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 1px; color: var(--muted); margin-top: 5px; }
+  .vs-step-time.slow { color: rgba(255,60,0,.7); }
+  .vs-step-time.fast { color: var(--accent2); }
+  .vs-outcome { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .vs-outcome-bad { font-size: 15px; color: rgba(255,60,0,.8); line-height: 1.5; }
+  .vs-outcome-good { font-size: 15px; color: var(--accent2); line-height: 1.5; font-weight: 500; }
+  .vs-mid { background: var(--border); display: flex; align-items: center; justify-content: center; }
+  .vs-vs-text { font-family: 'Bebas Neue'; font-size: 28px; color: var(--muted); writing-mode: vertical-rl; letter-spacing: 5px; }
+
+  /* Features */
+  .feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; background: var(--border); margin-bottom: 2px; }
+  .feat-item { background: var(--card); padding: 40px 32px; position: relative; overflow: hidden; transition: background .2s; }
+  .feat-item:hover { background: #141418; }
+  .feat-item::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--accent2); transform: scaleX(0); transition: transform .35s; }
+  .feat-item:hover::after { transform: scaleX(1); }
+  .feat-ico { width: 44px; height: 44px; margin-bottom: 22px; }
+  .feat-ico svg { width: 100%; height: 100%; }
+  .feat-title { font-size: 17px; font-weight: 600; margin-bottom: 12px; }
+  .feat-text { font-size: 13.5px; line-height: 1.8; color: var(--muted2); }
+
+  .ai-price { background: var(--card); border: 1px solid rgba(0,229,160,.13); padding: 52px; display: flex; justify-content: space-between; align-items: center; gap: 40px; }
+  .ai-price-big { font-family: 'Bebas Neue'; font-size: 88px; line-height: 1; color: var(--accent2); }
+  .ai-price-big span { font-size: 34px; color: var(--muted); }
+
+  /* ── CONTACT ── */
+  #contact { padding: 140px 52px; background: #060608; position: relative; overflow: hidden; }
+  .contact-glow { position: absolute; inset: 0; background: radial-gradient(ellipse 50% 70% at 50% 50%, rgba(255,60,0,.05) 0%, transparent 60%); pointer-events: none; }
+  .contact-inner { max-width: 820px; margin: 0 auto; text-align: center; position: relative; }
+  .contact-eyebrow { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent1); margin-bottom: 28px; display: flex; align-items: center; justify-content: center; gap: 16px; }
+  .contact-eyebrow::before, .contact-eyebrow::after { content: ''; display: block; width: 32px; height: 1px; background: var(--accent1); }
+  .contact-h { font-family: 'Bebas Neue'; font-size: clamp(60px, 9vw, 130px); line-height: .88; margin-bottom: 36px; }
+  .contact-h em { color: var(--accent1); font-style: normal; }
+  .contact-sub { font-size: 17px; line-height: 1.8; color: var(--muted2); max-width: 520px; margin: 0 auto 52px; }
+  .contact-sub strong { color: var(--text); }
+  .contact-links { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 52px; }
+  .c-link { display: flex; align-items: center; gap: 12px; padding: 17px 30px; border: 1px solid var(--border); color: var(--text); text-decoration: none; font-family: 'Space Mono'; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; transition: all .2s; }
+  .c-link:hover { border-color: var(--accent1); color: var(--accent1); }
+  .c-link svg { width: 16px; height: 16px; opacity: .6; transition: opacity .2s; }
+  .c-link:hover svg { opacity: 1; }
+  .contact-promise { display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; }
+  .cp-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted2); }
+  .cp-item::before { content: '✓'; color: var(--accent2); font-family: 'Space Mono'; font-size: 12px; }
+
+  footer { padding: 32px 52px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .foot-logo { font-family: 'Bebas Neue'; font-size: 22px; letter-spacing: 5px; color: var(--muted); }
+  .foot-logo em { color: var(--accent1); font-style: normal; }
+  .foot-text { font-family: 'Space Mono'; font-size: 9px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
+
+  /* ── REVEAL ── */
+  .rv { opacity: 0; transform: translateY(36px); transition: opacity .7s ease, transform .7s ease; }
+  .rv.on { opacity: 1; transform: none; }
+  .rv1 { transition-delay: .1s; }
+  .rv2 { transition-delay: .2s; }
+  .rv3 { transition-delay: .3s; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fu { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+  @keyframes pulse { 0%,100%{opacity:.3} 50%{opacity:1} }
+  @keyframes tick { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+  /* ── MOBILE ── */
+  @media(max-width:768px) {
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    .hero, #sites, #automation, #assistant, #contact { padding-left: 20px; padding-right: 20px; }
+    .hero { padding-bottom: 64px; }
+    .hero-h1 { font-size: 66px; }
+    .hero-bottom { flex-direction: column; gap: 32px; }
+    .s1-header, .s2-header { flex-direction: column; gap: 24px; align-items: flex-start; }
+    .pain-grid, .feat-grid { grid-template-columns: 1fr; }
+    .compare-grid { grid-template-columns: 1fr; }
+    .uc-grid { grid-template-columns: 1fr; }
+    .vs-wrap { grid-template-columns: 1fr; }
+    .vs-mid { display: none; }
+    .price-bar, .auto-price, .ai-price { flex-direction: column; align-items: flex-start; gap: 28px; }
+    .roi-bar { flex-direction: column; }
+    .hero-bg-num { font-size: 55vw; }
+    .divider { margin: 0 20px; }
+    footer { flex-direction: column; gap: 12px; }
+    .hero-nums { gap: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="curRing"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="logo">MA<em>K</em>E</a>
+  <ul class="nav-links">
+    <li><a href="#sites">Сайты</a></li>
+    <li><a href="#automation">Автоматизация</a></li>
+    <li><a href="#assistant">ИИ</a></li>
+  </ul>
+  <a href="#contact" class="nav-btn">Обсудить задачу</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-bg-num">26</div>
+
+  <div class="hero-eyebrow">Цифровые инструменты для роста бизнеса · 2026</div>
+
+  <h1 class="hero-h1">
+    <div>ПОКА ТЫ</div>
+    <div class="red">ДУМАЕШЬ —</div>
+    <div class="outline">ОНИ ДЕЛАЮТ</div>
+  </h1>
+
+  <div class="hero-bottom">
+    <p class="hero-sub">
+      Твой конкурент уже тестирует десять идей, пока ты дорабатываешь одну.
+      <strong>Сайты, автоматизации и ИИ-инструменты —</strong>
+      не для красоты, а чтобы ты двигался быстрее всех.
+    </p>
+    <div class="hero-nums">
+      <div class="hn-item">
+        <div class="hn-val">×10</div>
+        <div class="hn-label">Скорость запуска</div>
+      </div>
+      <div class="hn-item">
+        <div class="hn-val">7</div>
+        <div class="hn-label">Дней на сайт</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="hero-scroll-line"></div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <div class="ticker-item">Лендинги <em>→</em></div>
+    <div class="ticker-item">n8n Автоматизация <em>→</em></div>
+    <div class="ticker-item">ИИ-Ассистенты <em>→</em></div>
+    <div class="ticker-item">Telegram боты <em>→</em></div>
+    <div class="ticker-item">CRM интеграции <em>→</em></div>
+    <div class="ticker-item">Контент-заводы <em>→</em></div>
+    <div class="ticker-item">Рассылки КП <em>→</em></div>
+    <div class="ticker-item">Лендинги <em>→</em></div>
+    <div class="ticker-item">n8n Автоматизация <em>→</em></div>
+    <div class="ticker-item">ИИ-Ассистенты <em>→</em></div>
+    <div class="ticker-item">Telegram боты <em>→</em></div>
+    <div class="ticker-item">CRM интеграции <em>→</em></div>
+    <div class="ticker-item">Контент-заводы <em>→</em></div>
+    <div class="ticker-item">Рассылки КП <em>→</em></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══ SECTION 1: SITES ══ -->
+<section id="sites">
+  <div class="s1-header rv">
+    <div>
+      <div class="sec-num">// 01</div>
+      <h2 class="sec-h">САЙТ КОТОРЫЙ<br>РЕАЛЬНО <em>ПРОДАЁТ</em></h2>
+    </div>
+    <div class="s1-intro">
+      <p>Вы платите за сайт один раз — он работает годами. <strong>Разница между сайтом который продаёт и тем который просто существует — это разница в выручке.</strong></p>
+    </div>
+  </div>
+
+  <!-- PAIN -->
+  <div class="rv rv1">
+    <div class="pain-head">Узнаёте себя?</div>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="pain-card-ico">
+          <svg viewBox="0 0 36 36" fill="none">
+            <rect x="4" y="4" width="28" height="20" rx="2" stroke="#ff3c00" stroke-width="1.5"/>
+            <path d="M12 32h12M18 24v8" stroke="#ff3c00" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M11 13h14M11 17h8" stroke="#ff3c00" stroke-width="1.5" stroke-linecap="round" opacity=".4"/>
+          </svg>
+        </div>
+        <div class="pain-card-title">«Как у всех — только хуже»</div>
+        <div class="pain-card-text">Заплатили агентству, получили шаблон с Tilda. Открываете сайт конкурента — один в один. Клиент не запоминает, не звонит, не верит.</div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-card-ico">
+          <svg viewBox="0 0 36 36" fill="none">
+            <circle cx="18" cy="18" r="13" stroke="#ff3c00" stroke-width="1.5"/>
+            <path d="M18 10v8l5 3" stroke="#ff3c00" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M10 30l4-4M26 30l-4-4" stroke="#ff3c00" stroke-width="1.5" stroke-linecap="round" opacity=".4"/>
+          </svg>
+        </div>
+        <div class="pain-card-title">«Полгода и снова в ноль»</div>
+        <div class="pain-card-text">Студия пропала после сдачи. Поправить кнопку — неделя согласований. Обновить цены — ещё счёт. Сайт устарел раньше чем окупился.</div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-card-ico">
+          <svg viewBox="0 0 36 36" fill="none">
+            <path d="M6 30V16L18 6l12 10v14" stroke="#ff3c00" stroke-width="1.5" stroke-linejoin="round"/>
+            <rect x="13" y="20" width="10" height="10" rx="1" stroke="#ff3c00" stroke-width="1.5"/>
+            <path d="M18 20v10" stroke="#ff3c00" stroke-width="1.5" stroke-linecap="round" opacity=".4"/>
+          </svg>
+        </div>
+        <div class="pain-card-title">«Красиво, но заявок ноль»</div>
+        <div class="pain-card-text">Дизайнер сделал красивую картинку, но не думал о клиенте. Нет структуры, нет боли, нет причины позвонить прямо сейчас.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALLOUT -->
+  <div class="callout rv">
+    <div class="callout-text">
+      Я делаю сайты не красивыми — <strong>я делаю их продающими.</strong> Каждый блок — шаг к тому, чтобы человек написал вам первым.
+    </div>
+  </div>
+
+  <!-- COMPARE -->
+  <div class="rv rv1">
+    <div class="compare-grid">
+      <div class="compare-col">
+        <div class="compare-title">Студия или фриланс-шаблон</div>
+        <ul class="c-list">
+          <li>
+            <div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M3 8l3-3M3 8l3 3" stroke="rgba(255,60,0,.5)" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+            <span>Tilda, Bitrix, Wix — <strong>шаблон с лёгкими правками</strong> под вас</span>
+          </li>
+          <li>
+            <div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M3 8l3-3M3 8l3 3" stroke="rgba(255,60,0,.5)" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+            <span>Срок <strong>6–14 недель,</strong> часто больше</span>
+          </li>
+          <li>
+            <div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M3 8l3-3M3 8l3 3" stroke="rgba(255,60,0,.5)" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+            <span>От <strong>60 000 ₽</strong> — за шаблон с другим логотипом</span>
+          </li>
+          <li>
+            <div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M3 8l3-3M3 8l3 3" stroke="rgba(255,60,0,.5)" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+            <span>Правки — <strong>отдельный счёт</strong>, отдельные недели</span>
+          </li>
+          <li>
+            <div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M3 8l3-3M3 8l3 3" stroke="rgba(255,60,0,.5)" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+            <span>Сайт сдали — <strong>поддержки нет,</strong> вы сами по себе</span>
+          </li>
+        </ul>
+      </div>
+      <div class="compare-col win">
+        <div class="win-badge">Мой подход</div>
+        <div class="compare-title">Уникальный лендинг под вас</div>
+        <ul class="c-list">
+          <li>
+            <div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span><strong>Код с нуля,</strong> ни одного шаблона — ваш сайт уникален</span>
+          </li>
+          <li>
+            <div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Готово за <strong>3–7 дней</strong> — без согласований по полгода</span>
+          </li>
+          <li>
+            <div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>От <strong>15 000 ₽</strong> — уникальный дизайн по цене шаблона</span>
+          </li>
+          <li>
+            <div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Правки включены, <strong>отвечаю в тот же день</strong></span>
+          </li>
+          <li>
+            <div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Изучаю вашу нишу, <strong>бью в боли именно ваших клиентов</strong></span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="price-bar rv rv2">
+    <div class="price-left">
+      <div class="price-label2">Стоимость лендинга</div>
+      <div class="price-big"><span>от </span>15 000<span> ₽</span></div>
+      <div class="price-note">Срок: 3–7 дней · Правки включены · Поддержка после сдачи</div>
+    </div>
+    <div class="price-list">
+      <div class="price-li">Уникальный дизайн с нуля</div>
+      <div class="price-li">Мобильная адаптация</div>
+      <div class="price-li">Форма заявки и CTA</div>
+      <div class="price-li">Подключение домена</div>
+      <div class="price-li">SEO-оптимизация базовая</div>
+    </div>
+    <a href="#contact" class="btn-r">Хочу такой сайт</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ SECTION 2: N8N ══ -->
+<section id="automation">
+  <div class="auto-glow"></div>
+
+  <div class="s2-header rv">
+    <div>
+      <div class="sec-num">// 02</div>
+      <h2 class="sec-h">n8n: ваш бизнес<br>работает пока <em>вы спите</em></h2>
+    </div>
+    <div class="s2-intro">
+      <p><strong>Ваши сотрудники тратят до 40% времени на рутину.</strong> Это не их вина — так устроены процессы. Я перестраиваю процессы так, чтобы рутина исчезла.</p>
+    </div>
+  </div>
+
+  <!-- ROI -->
+  <div class="roi-bar rv">
+    <div class="roi-cell">
+      <div class="roi-val">248%</div>
+      <div class="roi-desc">ROI от автоматизации за 3 года<br><span style="font-size:11px;color:var(--muted)">Данные Forrester Research</span></div>
+    </div>
+    <div class="roi-cell">
+      <div class="roi-val">80 ч</div>
+      <div class="roi-desc">рутины в месяц<br>которые исчезают после настройки</div>
+    </div>
+    <div class="roi-cell">
+      <div class="roi-val">×10</div>
+      <div class="roi-desc">рост охвата рассылок<br>без найма новых менеджеров</div>
+    </div>
+  </div>
+
+  <div class="uc-grid rv rv1">
+    <div class="uc-item">
+      <div class="uc-n">01</div>
+      <div class="uc-body">
+        <div class="uc-title">Автоматические рассылки уникальных КП</div>
+        <div class="uc-text">Бот ищет базу → ИИ пишет КП под каждую компанию → отправляет в WhatsApp и email → фиксирует ответы в CRM. Менеджер видит только тех, кто ответил.</div>
+        <div class="uc-result">↑ Охват ×10 без роста команды</div>
+      </div>
+    </div>
+    <div class="uc-item">
+      <div class="uc-n">02</div>
+      <div class="uc-body">
+        <div class="uc-title">Контент-завод</div>
+        <div class="uc-text">Одна идея → автоматически разворачивается в пост для ВК, Telegram, сторис и заголовок для сайта. ИИ пишет под ваш стиль, планировщик публикует в нужное время.</div>
+        <div class="uc-result">↑ Публикации каждый день без копирайтера</div>
+      </div>
+    </div>
+    <div class="uc-item">
+      <div class="uc-n">03</div>
+      <div class="uc-body">
+        <div class="uc-title">Продающий Telegram / ВК бот</div>
+        <div class="uc-text">Бот квалифицирует лида, отвечает на вопросы по вашей базе знаний, записывает на встречу. Менеджер получает уведомление только о горячих заявках.</div>
+        <div class="uc-result">↑ Конверсия в заявку растёт, менеджер не выгорает</div>
+      </div>
+    </div>
+    <div class="uc-item">
+      <div class="uc-n">04</div>
+      <div class="uc-body">
+        <div class="uc-title">Синхронизация Ozon / WB / 1С</div>
+        <div class="uc-text">Остатки и цены из вашей учётной системы обновляются на всех маркетплейсах автоматически. Никаких ручных выгрузок и расхождений в остатках.</div>
+        <div class="uc-result">↑ Экономия 40+ минут ежедневно</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOW -->
+  <div class="flow-wrap rv rv2">
+    <div class="flow-label">// Пример: автоматическая рассылка КП за 5 шагов</div>
+    <div class="flow-row">
+      <div class="flow-node t">
+        <div class="flow-node-ico">
+          <svg viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="9" stroke="#6c6cff" stroke-width="1.4"/><path d="M11 7v4l3 2" stroke="#6c6cff" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+        <div class="flow-node-title">Триггер</div>
+        <div class="flow-node-sub">Новый лид в CRM</div>
+      </div>
+      <div class="flow-arr">→</div>
+      <div class="flow-node">
+        <div class="flow-node-ico">
+          <svg viewBox="0 0 22 22" fill="none"><circle cx="11" cy="9" r="4" stroke="#9a9a9a" stroke-width="1.4"/><path d="M4 19c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#9a9a9a" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+        <div class="flow-node-title">Парсинг</div>
+        <div class="flow-node-sub">Данные компании</div>
+      </div>
+      <div class="flow-arr">→</div>
+      <div class="flow-node">
+        <div class="flow-node-ico">
+          <svg viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="16" height="16" rx="3" stroke="#9a9a9a" stroke-width="1.4"/><path d="M7 11h8M7 7.5h5M7 14.5h3" stroke="#9a9a9a" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+        <div class="flow-node-title">ИИ-текст</div>
+        <div class="flow-node-sub">Уникальное КП</div>
+      </div>
+      <div class="flow-arr">→</div>
+      <div class="flow-node">
+        <div class="flow-node-ico">
+          <svg viewBox="0 0 22 22" fill="none"><path d="M3 5h16l-8 8L3 5z" stroke="#9a9a9a" stroke-width="1.4" stroke-linejoin="round"/><path d="M3 5v12h16V5" stroke="#9a9a9a" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="flow-node-title">Отправка</div>
+        <div class="flow-node-sub">Email + Telegram</div>
+      </div>
+      <div class="flow-arr">→</div>
+      <div class="flow-node r">
+        <div class="flow-node-ico">
+          <svg viewBox="0 0 22 22" fill="none"><path d="M4 11l5 5 9-9" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="flow-node-title">CRM</div>
+        <div class="flow-node-sub">Статус + алерт</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="auto-price rv rv3">
+    <div>
+      <div class="price-label2">Стоимость автоматизации</div>
+      <div class="auto-price-big"><span>от </span>20 000<span> ₽</span></div>
+      <div class="price-note">Зависит от сложности · Под ключ · Обучение включено</div>
+    </div>
+    <div class="price-list">
+      <div class="price-li">Анализ ваших процессов</div>
+      <div class="price-li">Разработка и настройка workflow</div>
+      <div class="price-li">Тестирование и запуск</div>
+      <div class="price-li">Поддержка 30 дней</div>
+    </div>
+    <a href="#contact" class="btn-o">Автоматизировать бизнес</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ SECTION 3: AI ASSISTANT ══ -->
+<section id="assistant">
+  <div class="ai-glow"></div>
+
+  <div class="s3-header rv">
+    <div class="sec-num">// 03</div>
+    <h2 class="sec-h">ИИ-АССИСТЕНТ —<br>ЕДИНСТВЕННЫЙ СПОСОБ<br><em>ПОБЕДИТЬ В 2026</em></h2>
+    <p class="s3-hook">
+      Не потому что модно. А потому что <strong>скорость стала оружием.</strong> Тот кто тестирует 10 идей в месяц — выигрывает у того кто тестирует одну. Разрыв только растёт.
+    </p>
+  </div>
+
+  <!-- VS -->
+  <div class="vs-wrap rv">
+    <div class="vs-col lose">
+      <div class="vs-who bad">Вы — без ИИ</div>
+      <div class="vs-steps">
+        <div class="vs-step">
+          <div class="vs-step-track"><div class="vs-dot"></div><div class="vs-line"></div></div>
+          <div class="vs-step-body">
+            <div class="vs-step-title">Придумал нишу. Начал исследовать рынок вручную</div>
+            <div class="vs-step-time slow">День 1–3</div>
+          </div>
+        </div>
+        <div class="vs-step">
+          <div class="vs-step-track"><div class="vs-dot"></div><div class="vs-line"></div></div>
+          <div class="vs-step-body">
+            <div class="vs-step-title">Сделал сайт сам или заказал — ждёшь, правишь</div>
+            <div class="vs-step-time slow">День 4–18</div>
+          </div>
+        </div>
+        <div class="vs-step">
+          <div class="vs-step-track"><div class="vs-dot"></div><div class="vs-line"></div></div>
+          <div class="vs-step-body">
+            <div class="vs-step-title">Написал тексты, настроил рекламу, запустил</div>
+            <div class="vs-step-time slow">День 19–28</div>
+          </div>
+        </div>
+        <div class="vs-step">
+          <div class="vs-step-track"><div class="vs-dot"></div></div>
+          <div class="vs-step-body">
+            <div class="vs-step-title">Ниша не выстрелила. Начинаешь заново</div>
+            <div class="vs-step-time slow">День 30 — месяц потерян</div>
+          </div>
+        </div>
+      </div>
+      <div class="vs-outcome">
+        <div class="vs-outcome-bad">✗ Протестирована 1 идея за месяц.<br>Результат — ноль. Время — потеряно.</div>
+      </div>
+    </div>
+
+    <div class="vs-mid"><div class="vs-vs-text">VS</div></div>
+
+    <div class="vs-col win2">
+      <div class="vs-who good">Конкурент — с ИИ</div>
+      <div class="vs-steps">
+        <div class="vs-step">
+          <div class="vs-step-track"><div class="vs-dot g"></div><div class="vs-line"></div></div>
+          <div class="vs-step-body">
+            <div class="vs-step-title">Идея → ИИ за 2 часа сделал анализ рынка, конкурентов, аудитории</div>
+            <div class="vs-step-time fast">День 1, утро</div>
+          </div>
+        </div>
+        <div class="vs-step">
+          <div class="vs-step-track"><div class="vs-dot g"></div><div class="vs-line"></div></div>
+          <div class="vs-step-body">
+            <div class="vs-step-title">Сайт + тексты + реклама — всё сгенерировано и запущено</div>
+            <div class="vs-step-time fast">День 1, вечер</div>
+          </div>
+        </div>
+        <div class="vs-step">
+          <div class="vs-step-track"><div class="vs-dot g"></div><div class="vs-line"></div></div>
+          <div class="vs-step-body">
+            <div class="vs-step-title">Ниша 1 не выстрелила — уже запущены ниши 2, 3, 4, 5...</div>
+            <div class="vs-step-time fast">День 3–20</div>
+          </div>
+        </div>
+        <div class="vs-step">
+          <div class="vs-step-track"><div class="vs-dot g"></div></div>
+          <div class="vs-step-body">
+            <div class="vs-step-title">2 из 10 выстрелили. Масштабирует победителей</div>
+            <div class="vs-step-time fast">День 30 — 2 работающих бизнеса</div>
+          </div>
+        </div>
+      </div>
+      <div class="vs-outcome">
+        <div class="vs-outcome-good">✓ Протестировано 10 идей.<br>2 в прибыли. Он уже оторвался — навсегда.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALLOUT -->
+  <div class="callout rv" style="border-left-color: var(--accent2); background: rgba(0,229,160,.05);">
+    <div class="callout-text" style="color:var(--muted2)">
+      Ты можешь не верить в ИИ. Но твой конкурент <strong style="color:var(--accent2)">уже верит — и уже использует.</strong> Пока ты решаешь, он отрывается.
+    </div>
+  </div>
+
+  <div class="feat-grid rv rv1">
+    <div class="feat-item">
+      <div class="feat-ico">
+        <svg viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="18" stroke="#00e5a0" stroke-width="1.5"/><path d="M14 22c0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 8-8 8" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round"/><circle cx="22" cy="22" r="3" fill="#00e5a0" opacity=".4"/></svg>
+      </div>
+      <div class="feat-title">Заточен под вас, не под всех</div>
+      <div class="feat-text">Не ChatGPT из коробки. Настраиваю ассистента под ваш стиль, вашу базу знаний, ваши задачи. Он знает ваш бизнес — и отвечает как вы.</div>
+    </div>
+    <div class="feat-item">
+      <div class="feat-ico">
+        <svg viewBox="0 0 44 44" fill="none"><path d="M8 22h4M32 22h4M22 8v4M22 32v4" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round"/><circle cx="22" cy="22" r="8" stroke="#00e5a0" stroke-width="1.5"/><path d="M16 16l4 4M24 24l4 4M28 16l-4 4M20 24l-4 4" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" opacity=".4"/></svg>
+      </div>
+      <div class="feat-title">Скорость — это теперь оружие</div>
+      <div class="feat-text">Сайт за день. Анализ рынка за час. Десять вариантов текста за минуту. Пока вы думаете над одним решением — с ИИ вы уже тестируете следующее.</div>
+    </div>
+    <div class="feat-item">
+      <div class="feat-ico">
+        <svg viewBox="0 0 44 44" fill="none"><rect x="8" y="12" width="28" height="20" rx="3" stroke="#00e5a0" stroke-width="1.5"/><path d="M16 20h12M16 26h8" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round"/><path d="M22 6v6M22 38v-6" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" opacity=".4"/></svg>
+      </div>
+      <div class="feat-title">Ваши данные — у вас</div>
+      <div class="feat-text">Не SaaS с лимитами и подписками. Кастомный инструмент на вашем сервере. Логика под ваши процессы. Никаких неожиданных ценников.</div>
+    </div>
+  </div>
+
+  <div class="ai-price rv rv2">
+    <div>
+      <div class="price-label2">Настройка ИИ-ассистента</div>
+      <div class="ai-price-big"><span>от </span>25 000<span> ₽</span></div>
+      <div class="price-note">Разовая настройка · Обучение · Поддержка 1 месяц</div>
+    </div>
+    <div class="price-list">
+      <div class="price-li">Анализ ваших задач и процессов</div>
+      <div class="price-li">Настройка под бизнес</div>
+      <div class="price-li">Обучение команды работе</div>
+      <div class="price-li">Интеграция с вашими инструментами</div>
+    </div>
+    <a href="#contact" class="btn-r">Хочу ИИ-ассистента</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ CONTACT ══ -->
+<section id="contact">
+  <div class="contact-glow"></div>
+  <div class="contact-inner rv">
+    <div class="contact-eyebrow">Начать работу</div>
+    <h2 class="contact-h">ПОРА <em>ДЕЙСТВОВАТЬ</em></h2>
+    <p class="contact-sub">
+      Расскажите о задаче — <strong>без лишних презентаций.</strong> Разберём что нужно, назову цену и сроки. Первый ответ — в течение часа.
+    </p>
+    <div class="contact-links">
+      <a href="https://t.me/username" class="c-link">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M2 8l11-5-4 13-3-5-4-3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+        Telegram
+      </a>
+      <a href="https://vk.com/username" class="c-link">
+        <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M4 8c0 0 1 2 4 2s4-2 4-2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        ВКонтакте
+      </a>
+      <a href="mailto:hello@example.com" class="c-link">
+        <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 5l7 5 7-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Email
+      </a>
+    </div>
+    <div class="contact-promise">
+      <div class="cp-item">Отвечу в течение часа</div>
+      <div class="cp-item">Никаких скрытых платежей</div>
+      <div class="cp-item">Покажу примеры из вашей ниши</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-logo">MA<em>K</em>E</div>
+  <div class="foot-text">Сайты · Автоматизация · ИИ — 2026</div>
+</footer>
+
+<script>
+  // Cursor
+  const cur = document.getElementById('cur');
+  const ring = document.getElementById('curRing');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{
+    mx=e.clientX; my=e.clientY;
+    cur.style.left=mx+'px'; cur.style.top=my+'px';
+  });
+  (function anim(){
+    rx+=(mx-rx)*.11; ry+=(my-ry)*.11;
+    ring.style.left=rx+'px'; ring.style.top=ry+'px';
+    requestAnimationFrame(anim);
+  })();
+  document.querySelectorAll('a,button,.pain-card,.uc-item,.feat-item,.compare-col,.roi-cell').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{ cur.style.transform='translate(-50%,-50%) scale(2.2)'; ring.style.width='58px'; ring.style.height='58px'; });
+    el.addEventListener('mouseleave',()=>{ cur.style.transform='translate(-50%,-50%) scale(1)'; ring.style.width='34px'; ring.style.height='34px'; });
+  });
+
+  // Nav
+  const nav=document.getElementById('nav');
+  window.addEventListener('scroll',()=>{ nav.classList.toggle('scrolled',scrollY>60); });
+
+  // Reveal
+  const obs=new IntersectionObserver(ents=>{ ents.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('on'); }); },{threshold:.1});
+  document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
