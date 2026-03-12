@@ -3,296 +3,460 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MAKE — Сайты · Автоматизация · ИИ</title>
+<title>MAKE — Сайты · Автоматизация · ИИ-ассистент</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Onest:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #070709;
-    --surface: #0e0e12;
-    --border: #1c1c22;
-    --accent1: #ff3c00;
-    --accent2: #00e5a0;
-    --accent3: #6c6cff;
-    --text: #ede9e0;
-    --muted: #707070;
-    --muted2: #9a9a9a;
-    --card: #0f0f13;
-  }
+:root {
+  --bg: #070709;
+  --border: #1c1c22;
+  --accent: #ff3c00;
+  --green: #00e5a0;
+  --blue: #6c6cff;
+  --text: #ede9e0;
+  --muted: #6e6e6e;
+  --muted2: #9e9e9e;
+  --card: #0f0f13;
+  --card2: #09090d;
+}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Onest', sans-serif; font-weight: 400; overflow-x: hidden; cursor: none; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Onest', sans-serif;
-    font-weight: 400;
-    overflow-x: hidden;
-    cursor: none;
-  }
+/* CURSOR */
+.cur { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: transform .15s, opacity .2s; }
+.cur-ring { width: 34px; height: 34px; border: 1px solid rgba(255,60,0,.3); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width .2s, height .2s; }
 
-  /* ── CURSOR ── */
-  .cur { width: 10px; height: 10px; background: var(--accent1); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: transform .15s, background .2s; }
-  .cur-ring { width: 34px; height: 34px; border: 1px solid rgba(255,60,0,.35); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width .2s, height .2s; }
-  body:hover .cur { opacity: 1; }
+/* NAV */
+nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; padding: 22px 52px; transition: all .4s; }
+nav.scrolled { background: rgba(7,7,9,.97); border-bottom: 1px solid var(--border); backdrop-filter: blur(16px); }
+.logo { font-family: 'Bebas Neue'; font-size: 26px; letter-spacing: 5px; color: var(--text); text-decoration: none; }
+.logo em { color: var(--accent); font-style: normal; }
+.nav-links { display: flex; gap: 40px; list-style: none; }
+.nav-links a { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted2); text-decoration: none; transition: color .2s; }
+.nav-links a:hover { color: var(--text); }
+.nav-btn { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; padding: 11px 24px; border: 1px solid var(--accent); color: var(--accent); text-decoration: none; transition: all .2s; white-space: nowrap; }
+.nav-btn:hover { background: var(--accent); color: #000; }
 
-  /* ── NAV ── */
-  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; padding: 22px 52px; transition: all .4s; }
-  nav.scrolled { background: rgba(7,7,9,.97); border-bottom: 1px solid var(--border); backdrop-filter: blur(16px); }
-  .logo { font-family: 'Bebas Neue'; font-size: 26px; letter-spacing: 5px; color: var(--text); text-decoration: none; }
-  .logo em { color: var(--accent1); font-style: normal; }
-  .nav-links { display: flex; gap: 40px; list-style: none; }
-  .nav-links a { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color .2s; }
-  .nav-links a:hover { color: var(--text); }
-  .nav-btn { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; padding: 11px 24px; border: 1px solid var(--accent1); color: var(--accent1); text-decoration: none; transition: all .2s; }
-  .nav-btn:hover { background: var(--accent1); color: #000; }
+/* HERO */
+.hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 52px 96px; position: relative; overflow: hidden; }
+.hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,60,0,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,60,0,.03) 1px, transparent 1px); background-size: 64px 64px; }
+.hero-glow { position: absolute; top: -20%; left: -10%; width: 60%; height: 80%; background: radial-gradient(ellipse, rgba(255,60,0,.055) 0%, transparent 65%); pointer-events: none; }
+.hero-bg-num { position: absolute; right: -2%; bottom: -5%; font-family: 'Bebas Neue'; font-size: 32vw; color: transparent; -webkit-text-stroke: 1px rgba(255,60,0,.04); line-height: 1; user-select: none; pointer-events: none; }
 
-  /* ── HERO ── */
-  .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 52px 88px; position: relative; overflow: hidden; }
-  .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,60,0,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,60,0,.035) 1px, transparent 1px); background-size: 64px 64px; }
-  .hero-glow { position: absolute; top: -20%; left: -10%; width: 60%; height: 80%; background: radial-gradient(ellipse, rgba(255,60,0,.06) 0%, transparent 65%); pointer-events: none; }
-  .hero-bg-num { position: absolute; right: -2%; bottom: -5%; font-family: 'Bebas Neue'; font-size: 32vw; color: transparent; -webkit-text-stroke: 1px rgba(255,60,0,.045); line-height: 1; user-select: none; pointer-events: none; }
+.hero-eyebrow { font-family: 'Space Mono'; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 28px; display: flex; align-items: center; gap: 14px; opacity: 0; animation: fu .8s .2s forwards; }
+.hero-eyebrow::before { content: ''; display: block; width: 32px; height: 1px; background: var(--accent); }
 
-  .hero-eyebrow { font-family: 'Space Mono'; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent1); margin-bottom: 28px; opacity: 0; animation: fu .8s .2s forwards; display: flex; align-items: center; gap: 14px; }
-  .hero-eyebrow::before { content: ''; display: block; width: 32px; height: 1px; background: var(--accent1); }
+.hero-h1 { font-family: 'Bebas Neue'; font-size: clamp(72px, 10.5vw, 164px); line-height: .88; letter-spacing: -2px; opacity: 0; animation: fu .9s .35s forwards; }
+.hero-h1 .red { color: var(--accent); }
+.hero-h1 .out { color: transparent; -webkit-text-stroke: 1px var(--text); }
 
-  .hero-h1 { font-family: 'Bebas Neue'; font-size: clamp(80px, 11vw, 172px); line-height: .88; letter-spacing: -2px; opacity: 0; animation: fu .9s .35s forwards; }
-  .hero-h1 .red { color: var(--accent1); }
-  .hero-h1 .outline { color: transparent; -webkit-text-stroke: 1px var(--text); }
+.hero-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 60px; gap: 40px; opacity: 0; animation: fu .8s .65s forwards; }
+.hero-sub { max-width: 460px; font-size: 17px; line-height: 1.75; color: var(--muted2); }
+.hero-sub strong { color: var(--text); font-weight: 600; }
+.hero-cta { display: flex; flex-direction: column; align-items: flex-end; gap: 16px; flex-shrink: 0; }
+.btn-hero { display: inline-block; font-family: 'Space Mono'; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 17px 36px; background: var(--accent); color: #000; text-decoration: none; font-weight: 700; cursor: none; transition: all .2s; white-space: nowrap; }
+.btn-hero:hover { background: #fff; transform: translateY(-2px); }
+.hero-note { font-family: 'Space Mono'; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
 
-  .hero-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 64px; opacity: 0; animation: fu .8s .65s forwards; }
-  .hero-sub { max-width: 440px; font-size: 17px; line-height: 1.75; color: var(--muted2); }
-  .hero-sub strong { color: var(--text); font-weight: 600; }
+.hero-scroll { position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; opacity: 0; animation: fu .8s 1.4s forwards; }
+.hero-scroll span { font-family: 'Space Mono'; font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); }
+.scroll-line { width: 1px; height: 52px; background: linear-gradient(var(--accent), transparent); animation: pulse 2s infinite; }
 
-  .hero-nums { display: flex; gap: 52px; }
-  .hn-item { text-align: right; }
-  .hn-val { font-family: 'Bebas Neue'; font-size: 52px; line-height: 1; color: var(--text); }
-  .hn-label { font-family: 'Space Mono'; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+/* ── CHAT SECTION ── */
+#chat-section { position: relative; background: #07070a; border-bottom: 1px solid var(--border); overflow: hidden; }
+.chat-bg-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(0,229,160,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,160,.018) 1px, transparent 1px); background-size: 48px 48px; pointer-events: none; }
+.chat-glow { position: absolute; top: -30%; right: -10%; width: 50%; height: 80%; background: radial-gradient(ellipse, rgba(0,229,160,.05) 0%, transparent 60%); pointer-events: none; }
 
-  .hero-scroll { position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; opacity: 0; animation: fu .8s 1.3s forwards; }
-  .hero-scroll span { font-family: 'Space Mono'; font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); }
-  .hero-scroll-line { width: 1px; height: 52px; background: linear-gradient(var(--accent1), transparent); animation: pulse 2s infinite; }
+.chat-inner { max-width: 860px; margin: 0 auto; padding: 80px 52px; position: relative; }
 
-  /* ── TICKER ── */
-  .ticker-wrap { overflow: hidden; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 13px 0; background: #08080b; }
-  .ticker { display: flex; animation: tick 22s linear infinite; white-space: nowrap; }
-  .ticker-item { display: flex; align-items: center; gap: 28px; padding: 0 36px; font-family: 'Bebas Neue'; font-size: 15px; letter-spacing: 3px; color: var(--muted); }
-  .ticker-item em { color: var(--accent1); font-style: normal; }
+.chat-header { text-align: center; margin-bottom: 48px; }
+.chat-eyebrow { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--green); margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 14px; }
+.chat-eyebrow::before, .chat-eyebrow::after { content: ''; display: block; width: 24px; height: 1px; background: var(--green); }
+.chat-title { font-family: 'Bebas Neue'; font-size: clamp(36px, 5vw, 64px); line-height: .92; margin-bottom: 14px; }
+.chat-title em { color: var(--green); font-style: normal; }
+.chat-sub { font-size: 15px; color: var(--muted2); line-height: 1.7; max-width: 500px; margin: 0 auto; }
 
-  /* ── SHARED ── */
-  .sec-num { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
-  .sec-num::after { content: ''; display: block; width: 24px; height: 1px; background: var(--border); }
-  .sec-h { font-family: 'Bebas Neue'; font-size: clamp(52px, 6.5vw, 100px); line-height: .92; letter-spacing: -1px; }
+/* Chat box */
+.chat-box { background: var(--card2); border: 1px solid var(--border); position: relative; }
+.chat-status-bar { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--border); background: rgba(0,229,160,.04); }
+.chat-status-left { display: flex; align-items: center; gap: 10px; }
+.chat-status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: blink 2s infinite; }
+.chat-status-name { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--green); }
+.chat-status-right { font-family: 'Space Mono'; font-size: 9px; letter-spacing: 1px; color: var(--muted); }
+.chat-counter { color: var(--green); transition: color .3s; }
+.chat-counter.warn { color: var(--accent); }
 
-  .divider { height: 1px; background: var(--border); margin: 0 52px; }
+.chat-messages { height: 380px; overflow-y: auto; padding: 24px 20px; display: flex; flex-direction: column; gap: 16px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.chat-messages::-webkit-scrollbar { width: 3px; }
+.chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-  .btn-r { display: inline-block; font-family: 'Space Mono'; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 16px 38px; background: var(--accent1); color: #000; text-decoration: none; font-weight: 700; border: none; cursor: none; transition: all .2s; }
-  .btn-r:hover { background: #fff; transform: translateY(-2px); }
-  .btn-o { display: inline-block; font-family: 'Space Mono'; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 16px 38px; border: 1px solid rgba(255,255,255,.2); color: var(--text); text-decoration: none; cursor: none; transition: all .2s; }
-  .btn-o:hover { border-color: var(--text); background: var(--text); color: #000; }
+.msg { display: flex; gap: 10px; max-width: 80%; animation: msgIn .3s ease; }
+.msg.bot { align-self: flex-start; }
+.msg.user { align-self: flex-end; flex-direction: row-reverse; }
+.msg-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue'; font-size: 12px; letter-spacing: 1px; margin-top: 2px; }
+.msg.bot .msg-avatar { background: rgba(0,229,160,.1); color: var(--green); border: 1px solid rgba(0,229,160,.2); }
+.msg.user .msg-avatar { background: rgba(255,60,0,.1); color: var(--accent); border: 1px solid rgba(255,60,0,.2); }
+.msg-bubble { padding: 12px 16px; font-size: 14px; line-height: 1.65; }
+.msg.bot .msg-bubble { background: #111118; border: 1px solid var(--border); color: var(--text); border-radius: 0 8px 8px 8px; }
+.msg.user .msg-bubble { background: rgba(255,60,0,.08); border: 1px solid rgba(255,60,0,.15); color: var(--text); border-radius: 8px 0 8px 8px; }
+.msg-typing { display: flex; gap: 4px; align-items: center; padding: 14px 18px; }
+.msg-typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: typing 1.2s infinite; }
+.msg-typing span:nth-child(2) { animation-delay: .2s; }
+.msg-typing span:nth-child(3) { animation-delay: .4s; }
 
-  /* ── SECTION 1: SITES ── */
-  #sites { padding: 128px 52px; position: relative; }
+.chat-input-wrap { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: flex-end; background: #0a0a0e; }
+.chat-input { flex: 1; background: var(--card); border: 1px solid var(--border); color: var(--text); font-family: 'Onest'; font-size: 14px; padding: 12px 16px; outline: none; resize: none; height: 46px; max-height: 120px; overflow-y: auto; line-height: 1.5; transition: border-color .2s; cursor: none; }
+.chat-input:focus { border-color: rgba(0,229,160,.4); }
+.chat-input::placeholder { color: var(--muted); }
+.chat-send { width: 46px; height: 46px; background: var(--green); border: none; cursor: none; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .2s; }
+.chat-send:hover { background: #fff; }
+.chat-send:disabled { background: var(--border); opacity: .5; }
+.chat-send svg { width: 18px; height: 18px; }
 
-  .s1-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 72px; }
-  .s1-header .sec-h em { color: var(--accent1); font-style: normal; }
-  .s1-intro { max-width: 380px; }
-  .s1-intro p { font-size: 16px; line-height: 1.8; color: var(--muted2); }
-  .s1-intro p strong { color: var(--text); font-weight: 600; }
+/* Limit overlay */
+.chat-limit-overlay { position: absolute; inset: 0; background: rgba(7,7,10,.95); backdrop-filter: blur(8px); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center; z-index: 10; }
+.chat-limit-overlay.show { display: flex; }
+.clo-icon { font-family: 'Bebas Neue'; font-size: 64px; color: var(--accent); line-height: 1; margin-bottom: 16px; }
+.clo-title { font-family: 'Bebas Neue'; font-size: 32px; letter-spacing: 1px; margin-bottom: 12px; }
+.clo-sub { font-size: 14px; color: var(--muted2); line-height: 1.7; max-width: 380px; margin-bottom: 32px; }
+.clo-form { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 380px; }
+.clo-input { background: var(--card); border: 1px solid var(--border); color: var(--text); font-family: 'Onest'; font-size: 14px; padding: 13px 16px; outline: none; transition: border-color .2s; cursor: none; }
+.clo-input:focus { border-color: rgba(255,60,0,.5); }
+.clo-input::placeholder { color: var(--muted); }
+.clo-btn { font-family: 'Space Mono'; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 15px; background: var(--accent); color: #000; font-weight: 700; border: none; cursor: none; transition: background .2s; }
+.clo-btn:hover { background: #fff; }
+.clo-success { display: none; font-family: 'Bebas Neue'; font-size: 28px; color: var(--green); }
 
-  /* Pain cards */
-  .pain-head { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent1); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
-  .pain-head::after { content: ''; flex: 1; height: 1px; background: rgba(255,60,0,.2); max-width: 120px; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+@keyframes typing { 0%,80%,100%{transform:scale(.7);opacity:.4} 40%{transform:scale(1);opacity:1} }
+@keyframes msgIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
 
-  .pain-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; background: var(--border); margin-bottom: 2px; }
-  .pain-card { background: var(--card); padding: 36px 30px; border-top: 2px solid transparent; transition: all .25s; }
-  .pain-card:hover { background: #141418; border-top-color: var(--accent1); }
-  .pain-card-ico { width: 36px; height: 36px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; }
-  .pain-card-ico svg { width: 100%; height: 100%; }
-  .pain-card-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; color: var(--text); }
-  .pain-card-text { font-size: 13.5px; line-height: 1.75; color: var(--muted2); }
+/* TICKER */
+.ticker-wrap { overflow: hidden; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 13px 0; background: #08080b; }
+.ticker { display: flex; animation: tick 22s linear infinite; white-space: nowrap; }
+.ticker-item { display: flex; align-items: center; gap: 28px; padding: 0 36px; font-family: 'Bebas Neue'; font-size: 15px; letter-spacing: 3px; color: var(--muted); }
+.ticker-item em { color: var(--accent); font-style: normal; }
 
-  /* Quote callout */
-  .callout { background: rgba(255,60,0,.06); border-left: 2px solid var(--accent1); padding: 24px 32px; margin: 64px 0; }
-  .callout-text { font-size: 22px; line-height: 1.5; color: var(--text); font-weight: 300; }
-  .callout-text strong { color: var(--accent1); font-weight: 700; }
+/* ABOUT STRIP */
+.about-strip { padding: 80px 52px; display: flex; align-items: center; gap: 64px; border-bottom: 1px solid var(--border); }
+.about-avatar { width: 100px; height: 100px; border-radius: 50%; background: var(--card); border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+.about-avatar::after { content: ''; position: absolute; inset: 0; border-radius: 50%; box-shadow: 0 0 0 2px rgba(255,60,0,.3); }
+.avatar-initials { font-family: 'Bebas Neue'; font-size: 36px; letter-spacing: 3px; color: var(--accent); }
+.about-text { flex: 1; }
+.about-name { font-family: 'Bebas Neue'; font-size: 32px; letter-spacing: 2px; margin-bottom: 8px; }
+.about-desc { font-size: 15px; line-height: 1.7; color: var(--muted2); max-width: 560px; }
+.about-desc strong { color: var(--text); }
+.about-stats { display: flex; gap: 48px; flex-shrink: 0; }
+.astat { text-align: right; }
+.astat-val { font-family: 'Bebas Neue'; font-size: 44px; line-height: 1; color: var(--text); }
+.astat-label { font-family: 'Space Mono'; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
 
-  /* Compare */
-  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: var(--border); }
-  .compare-col { background: var(--card); padding: 44px 40px; }
-  .compare-col.win { background: #0c1810; border: 1px solid rgba(0,229,160,.15); position: relative; }
-  .win-badge { position: absolute; top: -13px; left: 40px; background: var(--accent2); color: #000; font-family: 'Space Mono'; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; padding: 5px 14px; font-weight: 700; }
-  .compare-title { font-family: 'Bebas Neue'; font-size: 26px; letter-spacing: 1px; margin-bottom: 32px; color: var(--muted2); }
-  .compare-col.win .compare-title { color: var(--text); }
-  .c-list { list-style: none; display: flex; flex-direction: column; gap: 0; }
-  .c-list li { display: flex; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--border); font-size: 14px; line-height: 1.6; color: var(--muted2); }
-  .c-list li:last-child { border-bottom: none; }
-  .c-list li strong { color: var(--text); font-weight: 500; }
-  .c-ico { flex-shrink: 0; width: 16px; height: 16px; margin-top: 2px; display: flex; align-items: center; justify-content: center; }
+/* SHARED */
+.divider { height: 1px; background: var(--border); margin: 0 52px; }
+.sec-num { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.sec-num::after { content: ''; display: block; width: 24px; height: 1px; background: var(--border); }
+.sec-h { font-family: 'Bebas Neue'; font-size: clamp(48px, 6.5vw, 96px); line-height: .92; letter-spacing: -1px; }
+.callout { border-left: 2px solid var(--accent); padding: 24px 32px; margin: 60px 0; background: rgba(255,60,0,.05); }
+.callout.green { border-left-color: var(--green); background: rgba(0,229,160,.04); }
+.callout-text { font-size: 21px; line-height: 1.55; color: var(--text); font-weight: 300; }
+.callout-text strong { color: var(--accent); font-weight: 700; }
+.callout.green .callout-text strong { color: var(--green); }
+.btn-r { display: inline-block; font-family: 'Space Mono'; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 16px 36px; background: var(--accent); color: #000; text-decoration: none; font-weight: 700; border: none; cursor: none; transition: all .2s; white-space: nowrap; }
+.btn-r:hover { background: #fff; transform: translateY(-2px); }
+.btn-o { display: inline-block; font-family: 'Space Mono'; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 16px 36px; border: 1px solid rgba(255,255,255,.18); color: var(--text); text-decoration: none; cursor: none; transition: all .2s; white-space: nowrap; }
+.btn-o:hover { border-color: var(--text); background: var(--text); color: #000; }
 
-  /* Price */
-  .price-bar { background: var(--card); border: 1px solid var(--border); padding: 52px; display: flex; justify-content: space-between; align-items: center; gap: 40px; margin-top: 2px; }
-  .price-left {}
-  .price-label2 { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
-  .price-big { font-family: 'Bebas Neue'; font-size: 88px; line-height: 1; color: var(--accent2); }
-  .price-big span { font-size: 34px; color: var(--muted); }
-  .price-note { font-size: 13px; color: var(--muted); margin-top: 6px; }
-  .price-list { display: flex; flex-direction: column; gap: 10px; }
-  .price-li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text); }
-  .price-li::before { content: '→'; color: var(--accent2); font-family: 'Space Mono'; font-size: 12px; }
+/* ── SECTION 1: SITES ── */
+#sites { padding: 120px 52px; position: relative; }
+.s1-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 64px; gap: 40px; }
+.s1-header .sec-h em { color: var(--accent); font-style: normal; }
+.s1-intro p { font-size: 16px; line-height: 1.8; color: var(--muted2); max-width: 360px; }
+.s1-intro p strong { color: var(--text); font-weight: 600; }
 
-  /* ── SECTION 2: N8N ── */
-  #automation { padding: 128px 52px; background: #07070b; position: relative; overflow: hidden; }
-  .auto-glow { position: absolute; right: -10%; top: 20%; width: 50%; height: 60%; background: radial-gradient(ellipse, rgba(108,108,255,.05) 0%, transparent 65%); pointer-events: none; }
-  .s2-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px; position: relative; }
-  .s2-header .sec-h em { color: var(--accent3); font-style: normal; }
-  .s2-intro { max-width: 380px; font-size: 16px; line-height: 1.8; color: var(--muted2); }
-  .s2-intro strong { color: var(--text); font-weight: 600; }
+/* Pain */
+.pain-label { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; display: flex; align-items: center; gap: 12px; }
+.pain-label::after { content: ''; flex: 1; height: 1px; background: rgba(255,60,0,.18); max-width: 100px; }
+.pain-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; background: var(--border); margin-bottom: 2px; }
+.pain-card { background: var(--card); padding: 36px 30px; border-top: 2px solid transparent; transition: all .25s; }
+.pain-card:hover { background: #141418; border-top-color: var(--accent); }
+.pain-card-ico { width: 36px; height: 36px; margin-bottom: 20px; }
+.pain-card-ico svg { width: 100%; height: 100%; }
+.pain-card-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+.pain-card-text { font-size: 13.5px; line-height: 1.75; color: var(--muted2); }
 
-  /* ROI strip */
-  .roi-bar { display: flex; gap: 0; background: var(--border); margin-bottom: 2px; }
-  .roi-cell { flex: 1; background: rgba(108,108,255,.07); border: 1px solid rgba(108,108,255,.12); padding: 32px 36px; }
-  .roi-val { font-family: 'Bebas Neue'; font-size: 56px; line-height: 1; color: var(--text); }
-  .roi-desc { font-size: 13px; color: var(--muted2); margin-top: 6px; line-height: 1.5; }
+/* Cases */
+.cases-label { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--green); margin-bottom: 18px; display: flex; align-items: center; gap: 12px; }
+.cases-label::after { content: ''; flex: 1; height: 1px; background: rgba(0,229,160,.18); max-width: 100px; }
+.cases-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; background: var(--border); margin-bottom: 2px; }
+.case-card { background: var(--card2); padding: 32px 28px; position: relative; transition: background .2s; }
+.case-card:hover { background: #0d0d14; }
+.case-niche { font-family: 'Space Mono'; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.case-task { font-size: 14px; font-weight: 500; margin-bottom: 16px; line-height: 1.4; }
+.case-result { font-size: 13px; color: var(--muted2); line-height: 1.6; }
+.case-result strong { color: var(--green); font-weight: 600; }
+.case-tag { display: inline-block; margin-top: 14px; font-family: 'Space Mono'; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--green); border: 1px solid rgba(0,229,160,.2); padding: 4px 10px; }
 
-  /* Use cases */
-  .uc-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 2px; background: var(--border); margin-bottom: 2px; }
-  .uc-item { background: #09090d; padding: 40px 36px; display: flex; gap: 24px; position: relative; overflow: hidden; transition: background .2s; }
-  .uc-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent3); transform: scaleY(0); transition: transform .35s; transform-origin: bottom; }
-  .uc-item:hover { background: #0d0d14; }
-  .uc-item:hover::before { transform: scaleY(1); }
-  .uc-n { font-family: 'Bebas Neue'; font-size: 52px; color: rgba(108,108,255,.12); line-height: 1; flex-shrink: 0; width: 48px; }
-  .uc-body {}
-  .uc-title { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
-  .uc-text { font-size: 13.5px; line-height: 1.75; color: var(--muted2); }
-  .uc-result { margin-top: 14px; font-family: 'Space Mono'; font-size: 10px; letter-spacing: 1px; color: var(--accent3); text-transform: uppercase; }
+/* Compare */
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: var(--border); }
+.compare-col { background: var(--card); padding: 44px 40px; }
+.compare-col.win { background: #0c1810; border: 1px solid rgba(0,229,160,.13); position: relative; }
+.win-badge { position: absolute; top: -13px; left: 40px; background: var(--green); color: #000; font-family: 'Space Mono'; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; padding: 5px 14px; font-weight: 700; }
+.compare-title { font-family: 'Bebas Neue'; font-size: 24px; letter-spacing: 1px; margin-bottom: 30px; color: var(--muted2); }
+.compare-col.win .compare-title { color: var(--text); }
+.c-list { list-style: none; }
+.c-list li { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; line-height: 1.6; color: var(--muted2); }
+.c-list li:last-child { border-bottom: none; }
+.c-list li strong { color: var(--text); font-weight: 500; }
+.c-ico { flex-shrink: 0; width: 16px; height: 16px; margin-top: 3px; }
+.c-ico svg { width: 100%; height: 100%; }
 
-  /* Flow */
-  .flow-wrap { background: #09090d; border: 1px solid var(--border); padding: 52px; margin-bottom: 2px; }
-  .flow-label { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent3); margin-bottom: 36px; }
-  .flow-row { display: flex; align-items: center; flex-wrap: wrap; gap: 0; }
-  .flow-node { background: var(--card); border: 1px solid var(--border); padding: 18px 22px; min-width: 140px; text-align: center; flex-shrink: 0; transition: border-color .2s; }
-  .flow-node:hover { border-color: var(--accent3); }
-  .flow-node.t { border-color: rgba(108,108,255,.3); }
-  .flow-node.r { border-color: rgba(0,229,160,.3); }
-  .flow-node-ico { margin-bottom: 8px; }
-  /* SVG icons in flow */
-  .flow-node-ico svg { width: 22px; height: 22px; }
-  .flow-node-title { font-size: 12px; font-weight: 600; }
-  .flow-node-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
-  .flow-arr { font-family: 'Space Mono'; font-size: 20px; color: var(--accent3); padding: 0 10px; flex-shrink: 0; opacity: .5; }
+/* Pricing packages */
+.pkg-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; background: var(--border); margin-top: 2px; }
+.pkg { background: var(--card); padding: 40px 32px; position: relative; transition: background .2s; }
+.pkg:hover { background: #141418; }
+.pkg.popular { background: #0c1810; border: 1px solid rgba(0,229,160,.15); }
+.pkg-badge { position: absolute; top: -12px; left: 32px; background: var(--green); color: #000; font-family: 'Space Mono'; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; padding: 4px 12px; font-weight: 700; }
+.pkg-name { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+.pkg-price { font-family: 'Bebas Neue'; font-size: 64px; line-height: 1; color: var(--text); margin-bottom: 4px; }
+.pkg.popular .pkg-price { color: var(--green); }
+.pkg-price span { font-size: 28px; color: var(--muted); }
+.pkg-period { font-size: 12px; color: var(--muted); margin-bottom: 24px; }
+.pkg-list { list-style: none; margin-bottom: 28px; }
+.pkg-list li { font-size: 13px; color: var(--muted2); padding: 8px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: flex-start; line-height: 1.4; }
+.pkg-list li:last-child { border-bottom: none; }
+.pkg-list li::before { content: '→'; color: var(--green); font-family: 'Space Mono'; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+.pkg-btn { display: block; text-align: center; font-family: 'Space Mono'; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; padding: 13px; border: 1px solid rgba(255,255,255,.12); color: var(--text); text-decoration: none; transition: all .2s; cursor: none; }
+.pkg-btn:hover { border-color: var(--text); background: var(--text); color: #000; }
+.pkg.popular .pkg-btn { background: var(--green); color: #000; border-color: var(--green); font-weight: 700; }
+.pkg.popular .pkg-btn:hover { background: #fff; border-color: #fff; }
 
-  /* Auto price */
-  .auto-price { background: #09090d; border: 1px solid rgba(108,108,255,.18); padding: 52px; display: flex; justify-content: space-between; align-items: center; gap: 40px; }
-  .auto-price-big { font-family: 'Bebas Neue'; font-size: 88px; line-height: 1; color: var(--accent3); }
-  .auto-price-big span { font-size: 34px; color: var(--muted); }
+/* ── SECTION 2: N8N ── */
+#automation { padding: 120px 52px; background: #07070b; position: relative; overflow: hidden; }
+.auto-glow { position: absolute; right: -10%; top: 20%; width: 50%; height: 60%; background: radial-gradient(ellipse, rgba(108,108,255,.045) 0%, transparent 65%); pointer-events: none; }
+.s2-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 56px; gap: 40px; }
+.s2-header .sec-h em { color: var(--blue); font-style: normal; }
+.s2-intro { max-width: 360px; font-size: 15px; line-height: 1.8; color: var(--muted2); }
+.s2-intro strong { color: var(--text); font-weight: 600; }
 
-  /* ── SECTION 3: ASSISTANT ── */
-  #assistant { padding: 128px 52px; position: relative; overflow: hidden; }
-  .ai-glow { position: absolute; left: -5%; bottom: 10%; width: 40%; height: 50%; background: radial-gradient(ellipse, rgba(255,60,0,.04) 0%, transparent 65%); pointer-events: none; }
-  .s3-header { margin-bottom: 80px; }
-  .s3-header .sec-h em { color: var(--accent2); font-style: normal; }
-  .s3-hook { font-size: 20px; line-height: 1.7; color: var(--muted2); max-width: 700px; margin-top: 28px; }
-  .s3-hook strong { color: var(--text); font-weight: 600; }
+.roi-bar { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; background: var(--border); margin-bottom: 2px; }
+.roi-cell { background: rgba(108,108,255,.06); border: 1px solid rgba(108,108,255,.1); padding: 30px 34px; transition: background .2s; }
+.roi-cell:hover { background: rgba(108,108,255,.1); }
+.roi-val { font-family: 'Bebas Neue'; font-size: 52px; line-height: 1; color: var(--text); }
+.roi-desc { font-size: 13px; color: var(--muted2); margin-top: 6px; line-height: 1.5; }
+.roi-src { font-size: 10px; color: var(--muted); margin-top: 4px; font-family: 'Space Mono'; }
 
-  /* VS */
-  .vs-wrap { display: grid; grid-template-columns: 1fr 60px 1fr; gap: 0; background: var(--border); margin-bottom: 2px; }
-  .vs-col { background: var(--card); padding: 52px 44px; }
-  .vs-col.lose { background: #0b0b0b; }
-  .vs-col.win2 { background: #0b1410; }
-  .vs-who { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 28px; }
-  .vs-who.bad { color: var(--accent1); }
-  .vs-who.good { color: var(--accent2); }
-  .vs-steps { display: flex; flex-direction: column; gap: 0; }
-  .vs-step { display: flex; gap: 18px; }
-  .vs-step-track { display: flex; flex-direction: column; align-items: center; width: 16px; flex-shrink: 0; }
-  .vs-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent1); margin-top: 5px; flex-shrink: 0; }
-  .vs-dot.g { background: var(--accent2); }
-  .vs-line { width: 1px; background: var(--border); flex: 1; margin: 4px 0; }
-  .vs-step-body { padding-bottom: 26px; flex: 1; }
-  .vs-step-title { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.4; }
-  .vs-step-time { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 1px; color: var(--muted); margin-top: 5px; }
-  .vs-step-time.slow { color: rgba(255,60,0,.7); }
-  .vs-step-time.fast { color: var(--accent2); }
-  .vs-outcome { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
-  .vs-outcome-bad { font-size: 15px; color: rgba(255,60,0,.8); line-height: 1.5; }
-  .vs-outcome-good { font-size: 15px; color: var(--accent2); line-height: 1.5; font-weight: 500; }
-  .vs-mid { background: var(--border); display: flex; align-items: center; justify-content: center; }
-  .vs-vs-text { font-family: 'Bebas Neue'; font-size: 28px; color: var(--muted); writing-mode: vertical-rl; letter-spacing: 5px; }
+.uc-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 2px; background: var(--border); margin-bottom: 2px; }
+.uc-item { background: var(--card2); padding: 38px 34px; display: flex; gap: 22px; position: relative; overflow: hidden; transition: background .2s; }
+.uc-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--blue); transform: scaleY(0); transition: transform .35s; transform-origin: bottom; }
+.uc-item:hover { background: #0d0d14; }
+.uc-item:hover::before { transform: scaleY(1); }
+.uc-n { font-family: 'Bebas Neue'; font-size: 48px; color: rgba(108,108,255,.1); line-height: 1; flex-shrink: 0; width: 44px; }
+.uc-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+.uc-text { font-size: 13px; line-height: 1.75; color: var(--muted2); }
+.uc-result { margin-top: 12px; font-family: 'Space Mono'; font-size: 10px; letter-spacing: 1px; color: var(--blue); text-transform: uppercase; }
 
-  /* Features */
-  .feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; background: var(--border); margin-bottom: 2px; }
-  .feat-item { background: var(--card); padding: 40px 32px; position: relative; overflow: hidden; transition: background .2s; }
-  .feat-item:hover { background: #141418; }
-  .feat-item::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--accent2); transform: scaleX(0); transition: transform .35s; }
-  .feat-item:hover::after { transform: scaleX(1); }
-  .feat-ico { width: 44px; height: 44px; margin-bottom: 22px; }
-  .feat-ico svg { width: 100%; height: 100%; }
-  .feat-title { font-size: 17px; font-weight: 600; margin-bottom: 12px; }
-  .feat-text { font-size: 13.5px; line-height: 1.8; color: var(--muted2); }
+/* Flow — responsive */
+.flow-wrap { background: var(--card2); border: 1px solid var(--border); padding: 48px; margin-bottom: 2px; }
+.flow-label { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--blue); margin-bottom: 32px; }
+.flow-row { display: flex; align-items: center; gap: 0; overflow-x: auto; padding-bottom: 8px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.flow-row::-webkit-scrollbar { height: 3px; }
+.flow-row::-webkit-scrollbar-track { background: transparent; }
+.flow-row::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.flow-node { background: var(--card); border: 1px solid var(--border); padding: 16px 20px; min-width: 130px; text-align: center; flex-shrink: 0; transition: border-color .2s; }
+.flow-node:hover { border-color: var(--blue); }
+.flow-node.t { border-color: rgba(108,108,255,.3); }
+.flow-node.r { border-color: rgba(0,229,160,.3); }
+.flow-node-ico { margin-bottom: 8px; }
+.flow-node-ico svg { width: 20px; height: 20px; }
+.flow-node-title { font-size: 12px; font-weight: 600; }
+.flow-node-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.flow-arr { font-size: 18px; color: rgba(108,108,255,.4); padding: 0 8px; flex-shrink: 0; }
 
-  .ai-price { background: var(--card); border: 1px solid rgba(0,229,160,.13); padding: 52px; display: flex; justify-content: space-between; align-items: center; gap: 40px; }
-  .ai-price-big { font-family: 'Bebas Neue'; font-size: 88px; line-height: 1; color: var(--accent2); }
-  .ai-price-big span { font-size: 34px; color: var(--muted); }
+.auto-pkg-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; background: var(--border); }
+.auto-pkg { background: var(--card2); padding: 36px 30px; transition: background .2s; }
+.auto-pkg:hover { background: #0d0d14; }
+.auto-pkg.hot { background: #0a0a14; border: 1px solid rgba(108,108,255,.15); }
+.auto-pkg-name { font-family: 'Space Mono'; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+.auto-pkg-price { font-family: 'Bebas Neue'; font-size: 56px; line-height: 1; color: var(--text); margin-bottom: 4px; }
+.auto-pkg.hot .auto-pkg-price { color: var(--blue); }
+.auto-pkg-price span { font-size: 24px; color: var(--muted); }
+.auto-pkg-desc { font-size: 13px; color: var(--muted2); line-height: 1.7; margin-bottom: 18px; }
+.auto-pkg-features { list-style: none; }
+.auto-pkg-features li { font-size: 12px; color: var(--muted2); padding: 7px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; }
+.auto-pkg-features li:last-child { border-bottom: none; }
+.auto-pkg-features li::before { content: '·'; color: var(--blue); font-size: 16px; line-height: 1; flex-shrink: 0; }
 
-  /* ── CONTACT ── */
-  #contact { padding: 140px 52px; background: #060608; position: relative; overflow: hidden; }
-  .contact-glow { position: absolute; inset: 0; background: radial-gradient(ellipse 50% 70% at 50% 50%, rgba(255,60,0,.05) 0%, transparent 60%); pointer-events: none; }
-  .contact-inner { max-width: 820px; margin: 0 auto; text-align: center; position: relative; }
-  .contact-eyebrow { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent1); margin-bottom: 28px; display: flex; align-items: center; justify-content: center; gap: 16px; }
-  .contact-eyebrow::before, .contact-eyebrow::after { content: ''; display: block; width: 32px; height: 1px; background: var(--accent1); }
-  .contact-h { font-family: 'Bebas Neue'; font-size: clamp(60px, 9vw, 130px); line-height: .88; margin-bottom: 36px; }
-  .contact-h em { color: var(--accent1); font-style: normal; }
-  .contact-sub { font-size: 17px; line-height: 1.8; color: var(--muted2); max-width: 520px; margin: 0 auto 52px; }
-  .contact-sub strong { color: var(--text); }
-  .contact-links { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 52px; }
-  .c-link { display: flex; align-items: center; gap: 12px; padding: 17px 30px; border: 1px solid var(--border); color: var(--text); text-decoration: none; font-family: 'Space Mono'; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; transition: all .2s; }
-  .c-link:hover { border-color: var(--accent1); color: var(--accent1); }
-  .c-link svg { width: 16px; height: 16px; opacity: .6; transition: opacity .2s; }
-  .c-link:hover svg { opacity: 1; }
-  .contact-promise { display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; }
-  .cp-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted2); }
-  .cp-item::before { content: '✓'; color: var(--accent2); font-family: 'Space Mono'; font-size: 12px; }
+/* ── SECTION 3: AI ── */
+#assistant { padding: 120px 52px; position: relative; overflow: hidden; }
+.ai-glow { position: absolute; left: -5%; bottom: 10%; width: 40%; height: 50%; background: radial-gradient(ellipse, rgba(255,60,0,.035) 0%, transparent 65%); pointer-events: none; }
+.s3-header { margin-bottom: 72px; }
+.s3-header .sec-h em { color: var(--green); font-style: normal; }
+.s3-hook { font-size: 19px; line-height: 1.7; color: var(--muted2); max-width: 680px; margin-top: 24px; }
+.s3-hook strong { color: var(--text); font-weight: 600; }
 
-  footer { padding: 32px 52px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-  .foot-logo { font-family: 'Bebas Neue'; font-size: 22px; letter-spacing: 5px; color: var(--muted); }
-  .foot-logo em { color: var(--accent1); font-style: normal; }
-  .foot-text { font-family: 'Space Mono'; font-size: 9px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
+/* VS */
+.vs-wrap { display: grid; grid-template-columns: 1fr 56px 1fr; gap: 0; background: var(--border); margin-bottom: 2px; }
+.vs-col { background: var(--card); padding: 48px 42px; }
+.vs-col.lose { background: #0b0b0b; }
+.vs-col.win { background: #0b1410; }
+.vs-who { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 26px; }
+.vs-who.bad { color: var(--accent); }
+.vs-who.good { color: var(--green); }
+.vs-steps { display: flex; flex-direction: column; }
+.vs-step { display: flex; gap: 16px; }
+.vs-track { display: flex; flex-direction: column; align-items: center; width: 14px; flex-shrink: 0; }
+.vs-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-top: 5px; flex-shrink: 0; }
+.vs-dot.g { background: var(--green); }
+.vs-ln { width: 1px; background: var(--border); flex: 1; margin: 4px 0; }
+.vs-body { padding-bottom: 24px; flex: 1; }
+.vs-title { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.4; }
+.vs-time { font-family: 'Space Mono'; font-size: 10px; color: var(--muted); margin-top: 4px; }
+.vs-time.slow { color: rgba(255,60,0,.65); }
+.vs-time.fast { color: var(--green); }
+.vs-outcome { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
+.vs-bad { font-size: 14px; color: rgba(255,60,0,.75); line-height: 1.5; }
+.vs-good { font-size: 14px; color: var(--green); font-weight: 500; line-height: 1.5; }
+.vs-mid { background: var(--border); display: flex; align-items: center; justify-content: center; }
+.vs-vs { font-family: 'Bebas Neue'; font-size: 26px; color: var(--muted); writing-mode: vertical-rl; letter-spacing: 5px; }
 
-  /* ── REVEAL ── */
-  .rv { opacity: 0; transform: translateY(36px); transition: opacity .7s ease, transform .7s ease; }
-  .rv.on { opacity: 1; transform: none; }
-  .rv1 { transition-delay: .1s; }
-  .rv2 { transition-delay: .2s; }
-  .rv3 { transition-delay: .3s; }
+.feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; background: var(--border); margin-bottom: 2px; }
+.feat-item { background: var(--card); padding: 38px 30px; position: relative; overflow: hidden; transition: background .2s; }
+.feat-item:hover { background: #141418; }
+.feat-item::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--green); transform: scaleX(0); transition: transform .35s; }
+.feat-item:hover::after { transform: scaleX(1); }
+.feat-ico { width: 42px; height: 42px; margin-bottom: 20px; }
+.feat-ico svg { width: 100%; height: 100%; }
+.feat-title { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
+.feat-text { font-size: 13px; line-height: 1.8; color: var(--muted2); }
 
-  /* ── ANIMATIONS ── */
-  @keyframes fu { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
-  @keyframes pulse { 0%,100%{opacity:.3} 50%{opacity:1} }
-  @keyframes tick { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.ai-pkg-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 2px; background: var(--border); }
+.ai-pkg { background: var(--card2); padding: 40px 36px; transition: background .2s; }
+.ai-pkg:hover { background: #0e0e14; }
+.ai-pkg.hot { background: #0c1810; border: 1px solid rgba(0,229,160,.13); }
+.ai-pkg-name { font-family: 'Space Mono'; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+.ai-pkg-price { font-family: 'Bebas Neue'; font-size: 64px; line-height: 1; color: var(--text); margin-bottom: 8px; }
+.ai-pkg.hot .ai-pkg-price { color: var(--green); }
+.ai-pkg-price span { font-size: 26px; color: var(--muted); }
+.ai-pkg-desc { font-size: 13.5px; line-height: 1.7; color: var(--muted2); margin-bottom: 20px; }
+.ai-pkg-list { list-style: none; margin-bottom: 28px; }
+.ai-pkg-list li { font-size: 13px; color: var(--muted2); padding: 8px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; line-height: 1.4; }
+.ai-pkg-list li:last-child { border-bottom: none; }
+.ai-pkg-list li::before { content: '→'; color: var(--green); font-family: 'Space Mono'; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
 
-  /* ── MOBILE ── */
-  @media(max-width:768px) {
-    nav { padding: 16px 20px; }
-    .nav-links { display: none; }
-    .hero, #sites, #automation, #assistant, #contact { padding-left: 20px; padding-right: 20px; }
-    .hero { padding-bottom: 64px; }
-    .hero-h1 { font-size: 66px; }
-    .hero-bottom { flex-direction: column; gap: 32px; }
-    .s1-header, .s2-header { flex-direction: column; gap: 24px; align-items: flex-start; }
-    .pain-grid, .feat-grid { grid-template-columns: 1fr; }
-    .compare-grid { grid-template-columns: 1fr; }
-    .uc-grid { grid-template-columns: 1fr; }
-    .vs-wrap { grid-template-columns: 1fr; }
-    .vs-mid { display: none; }
-    .price-bar, .auto-price, .ai-price { flex-direction: column; align-items: flex-start; gap: 28px; }
-    .roi-bar { flex-direction: column; }
-    .hero-bg-num { font-size: 55vw; }
-    .divider { margin: 0 20px; }
-    footer { flex-direction: column; gap: 12px; }
-    .hero-nums { gap: 28px; }
-  }
+/* CONTACT */
+#contact { padding: 120px 52px; background: #060608; position: relative; overflow: hidden; }
+.contact-glow { position: absolute; inset: 0; background: radial-gradient(ellipse 50% 60% at 50% 50%, rgba(255,60,0,.04) 0%, transparent 60%); pointer-events: none; }
+.contact-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: var(--border); position: relative; }
+.contact-left { background: var(--card); padding: 64px 56px; }
+.contact-eyebrow { font-family: 'Space Mono'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 24px; display: flex; align-items: center; gap: 14px; }
+.contact-eyebrow::before { content: ''; display: block; width: 24px; height: 1px; background: var(--accent); }
+.contact-h { font-family: 'Bebas Neue'; font-size: clamp(52px, 6vw, 88px); line-height: .9; margin-bottom: 28px; }
+.contact-h em { color: var(--accent); font-style: normal; }
+.contact-sub { font-size: 16px; line-height: 1.8; color: var(--muted2); margin-bottom: 36px; }
+.contact-sub strong { color: var(--text); }
+.contact-hook { background: rgba(255,60,0,.07); border-left: 2px solid var(--accent); padding: 16px 20px; margin-bottom: 32px; font-size: 14px; line-height: 1.6; color: var(--muted2); }
+.contact-hook strong { color: var(--text); }
+.contact-links { display: flex; flex-direction: column; gap: 10px; }
+.c-link { display: flex; align-items: center; gap: 12px; padding: 15px 20px; border: 1px solid var(--border); color: var(--text); text-decoration: none; font-family: 'Space Mono'; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; transition: all .2s; }
+.c-link:hover { border-color: var(--accent); color: var(--accent); }
+.c-link svg { width: 15px; height: 15px; opacity: .5; transition: opacity .2s; flex-shrink: 0; }
+.c-link:hover svg { opacity: 1; }
+.c-link-sub { font-size: 11px; color: var(--muted); font-family: 'Space Mono'; margin-left: auto; letter-spacing: 0; text-transform: none; }
+
+/* FORM */
+.contact-right { background: #0b0b0f; padding: 64px 56px; }
+.form-title { font-family: 'Bebas Neue'; font-size: 28px; letter-spacing: 1px; margin-bottom: 32px; color: var(--muted2); }
+.form-group { margin-bottom: 18px; }
+.form-label { font-family: 'Space Mono'; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; display: block; }
+.form-input, .form-select, .form-textarea { width: 100%; background: var(--card); border: 1px solid var(--border); color: var(--text); font-family: 'Onest'; font-size: 15px; padding: 14px 16px; outline: none; transition: border-color .2s; cursor: none; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: rgba(255,60,0,.5); }
+.form-input::placeholder, .form-textarea::placeholder { color: var(--muted); }
+.form-select { cursor: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236e6e6e' stroke-width='1.2' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; background-size: 10px; padding-right: 36px; }
+.form-select option { background: #111; }
+.form-textarea { height: 100px; resize: none; }
+.form-note { font-size: 12px; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
+.form-submit { width: 100%; font-family: 'Space Mono'; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 16px; background: var(--accent); color: #000; font-weight: 700; border: none; cursor: none; transition: all .2s; }
+.form-submit:hover { background: #fff; }
+.form-success { display: none; text-align: center; padding: 40px 20px; }
+.form-success-icon { font-size: 48px; margin-bottom: 16px; }
+.form-success-title { font-family: 'Bebas Neue'; font-size: 32px; color: var(--green); margin-bottom: 8px; }
+.form-success-text { font-size: 14px; color: var(--muted2); }
+
+.contact-promises { display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; margin-top: 2px; padding: 24px 52px; background: var(--card); border: 1px solid var(--border); }
+.cp { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted2); }
+.cp::before { content: '✓'; color: var(--green); font-family: 'Space Mono'; font-size: 11px; }
+
+footer { padding: 32px 52px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.foot-logo { font-family: 'Bebas Neue'; font-size: 22px; letter-spacing: 5px; color: var(--muted); }
+.foot-logo em { color: var(--accent); font-style: normal; }
+.foot-text { font-family: 'Space Mono'; font-size: 9px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
+
+/* REVEAL */
+.rv { opacity: 0; transform: translateY(32px); transition: opacity .65s ease, transform .65s ease; }
+.rv.on { opacity: 1; transform: none; }
+.rv1 { transition-delay: .1s; }
+.rv2 { transition-delay: .2s; }
+.rv3 { transition-delay: .3s; }
+
+/* ANIMATIONS */
+@keyframes fu { from{opacity:0;transform:translateY(26px)} to{opacity:1;transform:none} }
+@keyframes pulse { 0%,100%{opacity:.3} 50%{opacity:1} }
+@keyframes tick { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* ── TABLET 1024px ── */
+@media(max-width:1024px) {
+  nav { padding: 18px 32px; }
+  .hero, #sites, #automation, #assistant, #contact { padding-left: 32px; padding-right: 32px; }
+  .about-strip { padding: 60px 32px; gap: 40px; }
+  .about-stats { gap: 32px; }
+  .pain-grid, .cases-grid, .feat-grid { grid-template-columns: repeat(2,1fr); }
+  .pkg-grid { grid-template-columns: repeat(2,1fr); }
+  .roi-bar { grid-template-columns: repeat(3,1fr); }
+  .uc-grid { grid-template-columns: 1fr; }
+  .auto-pkg-grid { grid-template-columns: repeat(3,1fr); }
+  .vs-wrap { grid-template-columns: 1fr; }
+  .vs-mid { display: none; }
+  .s1-header, .s2-header { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .compare-grid { grid-template-columns: 1fr; }
+  .contact-wrap { grid-template-columns: 1fr; }
+  .divider { margin: 0 32px; }
+}
+
+/* ── MOBILE 640px ── */
+@media(max-width:640px) {
+  nav { padding: 14px 18px; }
+  .nav-links { display: none; }
+  .hero { padding: 0 18px 72px; }
+  .hero-h1 { font-size: clamp(48px, 13vw, 72px); }
+  .hero-bottom { flex-direction: column; align-items: flex-start; gap: 28px; }
+  .hero-cta { align-items: flex-start; }
+  .hero-bg-num { font-size: 55vw; right: -3%; }
+  #sites, #automation, #assistant, #contact { padding: 80px 18px; }
+  .about-strip { flex-direction: column; align-items: flex-start; padding: 60px 18px; gap: 28px; }
+  .about-stats { gap: 24px; }
+  .pain-grid, .cases-grid, .feat-grid { grid-template-columns: 1fr; }
+  .pkg-grid { grid-template-columns: 1fr; }
+  .pkg.popular { margin-top: 12px; }
+  .roi-bar { grid-template-columns: 1fr; }
+  .uc-grid { grid-template-columns: 1fr; }
+  .auto-pkg-grid { grid-template-columns: 1fr; }
+  .vs-wrap { grid-template-columns: 1fr; }
+  .vs-mid { display: none; }
+  .ai-pkg-grid { grid-template-columns: 1fr; }
+  .compare-grid { grid-template-columns: 1fr; }
+  .contact-wrap { grid-template-columns: 1fr; }
+  .contact-left, .contact-right { padding: 40px 24px; }
+  .contact-promises { flex-direction: column; gap: 16px; padding: 24px 18px; }
+  .divider { margin: 0 18px; }
+  .flow-wrap { padding: 32px 18px; }
+  .flow-row { gap: 0; }
+  .flow-node { min-width: 110px; padding: 14px 14px; }
+  footer { flex-direction: column; gap: 12px; padding: 24px 18px; }
+  .callout { padding: 20px 20px; }
+  .callout-text { font-size: 18px; }
+}
 </style>
 </head>
 <body>
@@ -307,8 +471,9 @@
     <li><a href="#sites">Сайты</a></li>
     <li><a href="#automation">Автоматизация</a></li>
     <li><a href="#assistant">ИИ</a></li>
+    <li><a href="#contact">Контакт</a></li>
   </ul>
-  <a href="#contact" class="nav-btn">Обсудить задачу</a>
+  <a href="#contact" class="nav-btn">Обсудить задачу →</a>
 </nav>
 
 <!-- HERO -->
@@ -317,35 +482,76 @@
   <div class="hero-glow"></div>
   <div class="hero-bg-num">26</div>
 
-  <div class="hero-eyebrow">Цифровые инструменты для роста бизнеса · 2026</div>
+  <div class="hero-eyebrow">Цифровые инструменты для бизнеса · 2026</div>
 
   <h1 class="hero-h1">
     <div>ПОКА ТЫ</div>
     <div class="red">ДУМАЕШЬ —</div>
-    <div class="outline">ОНИ ДЕЛАЮТ</div>
+    <div class="out">ОНИ ДЕЛАЮТ</div>
   </h1>
 
   <div class="hero-bottom">
     <p class="hero-sub">
-      Твой конкурент уже тестирует десять идей, пока ты дорабатываешь одну.
-      <strong>Сайты, автоматизации и ИИ-инструменты —</strong>
-      не для красоты, а чтобы ты двигался быстрее всех.
+      Конкурент тестирует 10 идей, пока ты дорабатываешь одну.
+      <strong>Сайты с нуля, n8n-автоматизации и личный ИИ-ассистент —</strong>
+      не для красоты, а чтобы ты двигался быстрее всех в нише.
     </p>
-    <div class="hero-nums">
-      <div class="hn-item">
-        <div class="hn-val">×10</div>
-        <div class="hn-label">Скорость запуска</div>
-      </div>
-      <div class="hn-item">
-        <div class="hn-val">7</div>
-        <div class="hn-label">Дней на сайт</div>
-      </div>
+    <div class="hero-cta">
+      <a href="#sites" class="btn-hero">Посмотреть примеры работ</a>
+      <div class="hero-note">Ответ в течение часа · Без лишних слов</div>
     </div>
   </div>
 
   <div class="hero-scroll">
     <span>Scroll</span>
-    <div class="hero-scroll-line"></div>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ══ CHAT SECTION ══ -->
+<section id="chat-section">
+  <div class="chat-bg-grid"></div>
+  <div class="chat-glow"></div>
+  <div class="chat-inner">
+    <div class="chat-header rv">
+      <div class="chat-eyebrow">ИИ-консультант · Онлайн</div>
+      <h2 class="chat-title">РАССКАЖИ О ЗАДАЧЕ —<br><em>РАЗБЕРЁМСЯ ВМЕСТЕ</em></h2>
+      <p class="chat-sub">Бот задаст несколько вопросов и поможет понять что именно тебе нужно: сайт, автоматизация или ИИ-инструмент.</p>
+    </div>
+
+    <div class="chat-box rv rv1">
+      <div class="chat-status-bar">
+        <div class="chat-status-left">
+          <div class="chat-status-dot"></div>
+          <div class="chat-status-name">MAKE · ИИ-ассистент</div>
+        </div>
+        <div class="chat-status-right">Запросов: <span class="chat-counter" id="chatCounter">10</span> осталось</div>
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+        <!-- messages injected by JS -->
+      </div>
+
+      <div class="chat-input-wrap">
+        <textarea class="chat-input" id="chatInput" placeholder="Напишите свой ответ..." rows="1"></textarea>
+        <button class="chat-send" id="chatSend" onclick="sendMessage()">
+          <svg viewBox="0 0 18 18" fill="none"><path d="M2 9h14M9 2l7 7-7 7" stroke="#000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+      <!-- Limit overlay -->
+      <div class="chat-limit-overlay" id="chatLimitOverlay">
+        <div class="clo-icon">10</div>
+        <div class="clo-title">Лимит запросов исчерпан</div>
+        <div class="clo-sub">Оставьте контакты — я свяжусь с вами лично и продолжим разговор. Отвечу в течение часа.</div>
+        <div class="clo-form" id="cloForm">
+          <input class="clo-input" id="cloName" placeholder="Ваше имя">
+          <input class="clo-input" id="cloContact" placeholder="Telegram @username или телефон">
+          <button class="clo-btn" onclick="submitCLO()">Отправить контакты →</button>
+        </div>
+        <div class="clo-success" id="cloSuccess">✓ Контакты получены — напишу скоро!</div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -353,19 +559,47 @@
 <div class="ticker-wrap">
   <div class="ticker">
     <div class="ticker-item">Лендинги <em>→</em></div>
-    <div class="ticker-item">n8n Автоматизация <em>→</em></div>
-    <div class="ticker-item">ИИ-Ассистенты <em>→</em></div>
+    <div class="ticker-item">n8n автоматизация <em>→</em></div>
+    <div class="ticker-item">ИИ-ассистенты <em>→</em></div>
     <div class="ticker-item">Telegram боты <em>→</em></div>
     <div class="ticker-item">CRM интеграции <em>→</em></div>
     <div class="ticker-item">Контент-заводы <em>→</em></div>
     <div class="ticker-item">Рассылки КП <em>→</em></div>
     <div class="ticker-item">Лендинги <em>→</em></div>
-    <div class="ticker-item">n8n Автоматизация <em>→</em></div>
-    <div class="ticker-item">ИИ-Ассистенты <em>→</em></div>
+    <div class="ticker-item">n8n автоматизация <em>→</em></div>
+    <div class="ticker-item">ИИ-ассистенты <em>→</em></div>
     <div class="ticker-item">Telegram боты <em>→</em></div>
     <div class="ticker-item">CRM интеграции <em>→</em></div>
     <div class="ticker-item">Контент-заводы <em>→</em></div>
     <div class="ticker-item">Рассылки КП <em>→</em></div>
+  </div>
+</div>
+
+<!-- ABOUT STRIP -->
+<div class="about-strip rv">
+  <div class="about-avatar">
+    <div class="avatar-initials">ИМЯ</div>
+  </div>
+  <div class="about-text">
+    <div class="about-name">Имя Фамилия</div>
+    <div class="about-desc">
+      Делаю сайты, n8n-автоматизации и ИИ-инструменты для малого и среднего бизнеса.
+      <strong>Работаю один — без лишних звеньев,</strong> поэтому быстро и без потерь в коммуникации.
+    </div>
+  </div>
+  <div class="about-stats">
+    <div class="astat">
+      <div class="astat-val">20+</div>
+      <div class="astat-label">Проектов</div>
+    </div>
+    <div class="astat">
+      <div class="astat-val">3</div>
+      <div class="astat-label">Года опыта</div>
+    </div>
+    <div class="astat">
+      <div class="astat-val">7</div>
+      <div class="astat-label">Дней на сайт</div>
+    </div>
   </div>
 </div>
 
@@ -379,13 +613,12 @@
       <h2 class="sec-h">САЙТ КОТОРЫЙ<br>РЕАЛЬНО <em>ПРОДАЁТ</em></h2>
     </div>
     <div class="s1-intro">
-      <p>Вы платите за сайт один раз — он работает годами. <strong>Разница между сайтом который продаёт и тем который просто существует — это разница в выручке.</strong></p>
+      <p>Вы платите один раз — он работает годами. <strong>Разница между сайтом который продаёт и тем который "просто есть" — это реальная разница в выручке.</strong></p>
     </div>
   </div>
 
-  <!-- PAIN -->
   <div class="rv rv1">
-    <div class="pain-head">Узнаёте себя?</div>
+    <div class="pain-label">Узнаёте себя?</div>
     <div class="pain-grid">
       <div class="pain-card">
         <div class="pain-card-ico">
@@ -406,7 +639,7 @@
             <path d="M10 30l4-4M26 30l-4-4" stroke="#ff3c00" stroke-width="1.5" stroke-linecap="round" opacity=".4"/>
           </svg>
         </div>
-        <div class="pain-card-title">«Полгода и снова в ноль»</div>
+        <div class="pain-card-title">«Полгода — и снова в ноль»</div>
         <div class="pain-card-text">Студия пропала после сдачи. Поправить кнопку — неделя согласований. Обновить цены — ещё счёт. Сайт устарел раньше чем окупился.</div>
       </div>
       <div class="pain-card">
@@ -417,90 +650,113 @@
             <path d="M18 20v10" stroke="#ff3c00" stroke-width="1.5" stroke-linecap="round" opacity=".4"/>
           </svg>
         </div>
-        <div class="pain-card-title">«Красиво, но заявок ноль»</div>
+        <div class="pain-card-title">«Красиво — но заявок ноль»</div>
         <div class="pain-card-text">Дизайнер сделал красивую картинку, но не думал о клиенте. Нет структуры, нет боли, нет причины позвонить прямо сейчас.</div>
       </div>
     </div>
   </div>
 
-  <!-- CALLOUT -->
   <div class="callout rv">
     <div class="callout-text">
       Я делаю сайты не красивыми — <strong>я делаю их продающими.</strong> Каждый блок — шаг к тому, чтобы человек написал вам первым.
     </div>
   </div>
 
-  <!-- COMPARE -->
+  <!-- CASES -->
   <div class="rv rv1">
+    <div class="cases-label">Примеры работ</div>
+    <div class="cases-grid">
+      <div class="case-card">
+        <div class="case-niche">Юридические услуги · Пермь</div>
+        <div class="case-task">Лендинг для адвоката по банкротству физлиц</div>
+        <div class="case-result">Старый сайт давал 2–3 заявки в месяц. После редизайна — <strong>14 заявок в первый месяц</strong> без изменений в рекламе.</div>
+        <div class="case-tag">+600% заявок</div>
+      </div>
+      <div class="case-card">
+        <div class="case-niche">Строительство · Екатеринбург</div>
+        <div class="case-task">Сайт для бригады по ремонту квартир</div>
+        <div class="case-result">До — Instagram и сарафан. После — <strong>первый звонок с сайта на третий день</strong> после запуска. Сайт стоил 18 000 ₽.</div>
+        <div class="case-tag">Окупился за 1 заявку</div>
+      </div>
+      <div class="case-card">
+        <div class="case-niche">Образование · Онлайн</div>
+        <div class="case-task">Лендинг для онлайн-курса по Excel</div>
+        <div class="case-result">Конверсия страницы <strong>выросла с 1.2% до 4.7%</strong> после переработки структуры и текстов. Трафик не менялся.</div>
+        <div class="case-tag">×3.9 конверсия</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rv rv2">
     <div class="compare-grid">
       <div class="compare-col">
-        <div class="compare-title">Студия или фриланс-шаблон</div>
+        <div class="compare-title">Студия или шаблонный фриланс</div>
         <ul class="c-list">
-          <li>
-            <div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M3 8l3-3M3 8l3 3" stroke="rgba(255,60,0,.5)" stroke-width="1.3" stroke-linecap="round"/></svg></div>
-            <span>Tilda, Bitrix, Wix — <strong>шаблон с лёгкими правками</strong> под вас</span>
-          </li>
-          <li>
-            <div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M3 8l3-3M3 8l3 3" stroke="rgba(255,60,0,.5)" stroke-width="1.3" stroke-linecap="round"/></svg></div>
-            <span>Срок <strong>6–14 недель,</strong> часто больше</span>
-          </li>
-          <li>
-            <div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M3 8l3-3M3 8l3 3" stroke="rgba(255,60,0,.5)" stroke-width="1.3" stroke-linecap="round"/></svg></div>
-            <span>От <strong>60 000 ₽</strong> — за шаблон с другим логотипом</span>
-          </li>
-          <li>
-            <div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M3 8l3-3M3 8l3 3" stroke="rgba(255,60,0,.5)" stroke-width="1.3" stroke-linecap="round"/></svg></div>
-            <span>Правки — <strong>отдельный счёт</strong>, отдельные недели</span>
-          </li>
-          <li>
-            <div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M3 8l3-3M3 8l3 3" stroke="rgba(255,60,0,.5)" stroke-width="1.3" stroke-linecap="round"/></svg></div>
-            <span>Сайт сдали — <strong>поддержки нет,</strong> вы сами по себе</span>
-          </li>
+          <li><div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M3 8l3-3M3 8l3 3" stroke="rgba(255,60,0,.5)" stroke-width="1.3" stroke-linecap="round"/></svg></div><span>Tilda, Bitrix, Wix — <strong>шаблон с правками</strong></span></li>
+          <li><div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M3 8l3-3M3 8l3 3" stroke="rgba(255,60,0,.5)" stroke-width="1.3" stroke-linecap="round"/></svg></div><span>Срок <strong>6–14 недель,</strong> чаще больше</span></li>
+          <li><div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M3 8l3-3M3 8l3 3" stroke="rgba(255,60,0,.5)" stroke-width="1.3" stroke-linecap="round"/></svg></div><span>От <strong>60 000 ₽</strong> за шаблон с другим логотипом</span></li>
+          <li><div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M3 8l3-3M3 8l3 3" stroke="rgba(255,60,0,.5)" stroke-width="1.3" stroke-linecap="round"/></svg></div><span>Правки — <strong>отдельный счёт,</strong> отдельные недели</span></li>
+          <li><div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M3 8l3-3M3 8l3 3" stroke="rgba(255,60,0,.5)" stroke-width="1.3" stroke-linecap="round"/></svg></div><span>Сдали — <strong>пропали.</strong> Поддержки нет</span></li>
         </ul>
       </div>
       <div class="compare-col win">
         <div class="win-badge">Мой подход</div>
-        <div class="compare-title">Уникальный лендинг под вас</div>
+        <div class="compare-title">Лендинг с нуля под ваш бизнес</div>
         <ul class="c-list">
-          <li>
-            <div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <span><strong>Код с нуля,</strong> ни одного шаблона — ваш сайт уникален</span>
-          </li>
-          <li>
-            <div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <span>Готово за <strong>3–7 дней</strong> — без согласований по полгода</span>
-          </li>
-          <li>
-            <div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <span>От <strong>15 000 ₽</strong> — уникальный дизайн по цене шаблона</span>
-          </li>
-          <li>
-            <div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <span>Правки включены, <strong>отвечаю в тот же день</strong></span>
-          </li>
-          <li>
-            <div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <span>Изучаю вашу нишу, <strong>бью в боли именно ваших клиентов</strong></span>
-          </li>
+          <li><div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span><strong>Код с нуля,</strong> ни одного шаблона</span></li>
+          <li><div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span>Готово за <strong>3–7 дней</strong></span></li>
+          <li><div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span>От <strong>15 000 ₽</strong> — уникальный дизайн</span></li>
+          <li><div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span>Правки включены, <strong>отвечаю в тот же день</strong></span></li>
+          <li><div class="c-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span>Изучаю нишу, <strong>текст бьёт в боли клиентов</strong></span></li>
         </ul>
       </div>
     </div>
   </div>
 
-  <div class="price-bar rv rv2">
-    <div class="price-left">
-      <div class="price-label2">Стоимость лендинга</div>
-      <div class="price-big"><span>от </span>15 000<span> ₽</span></div>
-      <div class="price-note">Срок: 3–7 дней · Правки включены · Поддержка после сдачи</div>
+  <!-- PRICING PACKAGES -->
+  <div class="pkg-grid rv rv3">
+    <div class="pkg">
+      <div class="pkg-name">Старт</div>
+      <div class="pkg-price"><span>от </span>15 000<span> ₽</span></div>
+      <div class="pkg-period">3–5 дней</div>
+      <ul class="pkg-list">
+        <li>Лендинг 4–6 блоков</li>
+        <li>Уникальный дизайн с нуля</li>
+        <li>Мобильная адаптация</li>
+        <li>Форма заявки</li>
+        <li>Подключение домена</li>
+      </ul>
+      <a href="#contact" class="pkg-btn">Выбрать</a>
     </div>
-    <div class="price-list">
-      <div class="price-li">Уникальный дизайн с нуля</div>
-      <div class="price-li">Мобильная адаптация</div>
-      <div class="price-li">Форма заявки и CTA</div>
-      <div class="price-li">Подключение домена</div>
-      <div class="price-li">SEO-оптимизация базовая</div>
+    <div class="pkg popular">
+      <div class="pkg-badge">Популярный</div>
+      <div class="pkg-name">Стандарт</div>
+      <div class="pkg-price"><span>от </span>25 000<span> ₽</span></div>
+      <div class="pkg-period">5–7 дней</div>
+      <ul class="pkg-list">
+        <li>Лендинг 8–12 блоков</li>
+        <li>Анализ ниши и конкурентов</li>
+        <li>Продающие тексты под вас</li>
+        <li>Анимации и интерактив</li>
+        <li>SEO-оптимизация базовая</li>
+        <li>Правки 30 дней</li>
+      </ul>
+      <a href="#contact" class="pkg-btn">Выбрать</a>
     </div>
-    <a href="#contact" class="btn-r">Хочу такой сайт</a>
+    <div class="pkg">
+      <div class="pkg-name">Про</div>
+      <div class="pkg-price"><span>от </span>45 000<span> ₽</span></div>
+      <div class="pkg-period">10–14 дней</div>
+      <ul class="pkg-list">
+        <li>Многостраничный сайт</li>
+        <li>Личный кабинет / база</li>
+        <li>Интеграция с CRM / CMS</li>
+        <li>Подключение оплаты</li>
+        <li>Поддержка 3 месяца</li>
+        <li>A/B тест страниц</li>
+      </ul>
+      <a href="#contact" class="pkg-btn">Выбрать</a>
+    </div>
   </div>
 </section>
 
@@ -513,33 +769,33 @@
   <div class="s2-header rv">
     <div>
       <div class="sec-num">// 02</div>
-      <h2 class="sec-h">n8n: ваш бизнес<br>работает пока <em>вы спите</em></h2>
+      <h2 class="sec-h">n8n: бизнес<br>работает пока <em>вы спите</em></h2>
     </div>
     <div class="s2-intro">
-      <p><strong>Ваши сотрудники тратят до 40% времени на рутину.</strong> Это не их вина — так устроены процессы. Я перестраиваю процессы так, чтобы рутина исчезла.</p>
+      <p><strong>До 40% рабочего времени сотрудников — это рутина.</strong> Я строю автоматические цепочки которые это время забирают. Один раз настроил — работает годами.</p>
     </div>
   </div>
 
-  <!-- ROI -->
   <div class="roi-bar rv">
     <div class="roi-cell">
       <div class="roi-val">248%</div>
-      <div class="roi-desc">ROI от автоматизации за 3 года<br><span style="font-size:11px;color:var(--muted)">Данные Forrester Research</span></div>
+      <div class="roi-desc">ROI от автоматизации за 3 года</div>
+      <div class="roi-src">Forrester Research</div>
     </div>
     <div class="roi-cell">
       <div class="roi-val">80 ч</div>
-      <div class="roi-desc">рутины в месяц<br>которые исчезают после настройки</div>
+      <div class="roi-desc">рутины в месяц исчезает после настройки</div>
     </div>
     <div class="roi-cell">
-      <div class="roi-val">×10</div>
-      <div class="roi-desc">рост охвата рассылок<br>без найма новых менеджеров</div>
+      <div class="roi-val">40%</div>
+      <div class="roi-desc">рабочего времени — повторяющиеся задачи</div>
     </div>
   </div>
 
   <div class="uc-grid rv rv1">
     <div class="uc-item">
       <div class="uc-n">01</div>
-      <div class="uc-body">
+      <div>
         <div class="uc-title">Автоматические рассылки уникальных КП</div>
         <div class="uc-text">Бот ищет базу → ИИ пишет КП под каждую компанию → отправляет в WhatsApp и email → фиксирует ответы в CRM. Менеджер видит только тех, кто ответил.</div>
         <div class="uc-result">↑ Охват ×10 без роста команды</div>
@@ -547,229 +803,218 @@
     </div>
     <div class="uc-item">
       <div class="uc-n">02</div>
-      <div class="uc-body">
-        <div class="uc-title">Контент-завод</div>
+      <div>
+        <div class="uc-title">Контент-завод для соцсетей</div>
         <div class="uc-text">Одна идея → автоматически разворачивается в пост для ВК, Telegram, сторис и заголовок для сайта. ИИ пишет под ваш стиль, планировщик публикует в нужное время.</div>
         <div class="uc-result">↑ Публикации каждый день без копирайтера</div>
       </div>
     </div>
     <div class="uc-item">
       <div class="uc-n">03</div>
-      <div class="uc-body">
-        <div class="uc-title">Продающий Telegram / ВК бот</div>
-        <div class="uc-text">Бот квалифицирует лида, отвечает на вопросы по вашей базе знаний, записывает на встречу. Менеджер получает уведомление только о горячих заявках.</div>
-        <div class="uc-result">↑ Конверсия в заявку растёт, менеджер не выгорает</div>
+      <div>
+        <div class="uc-title">Продающий бот Telegram / ВК</div>
+        <div class="uc-text">Бот квалифицирует лида, отвечает на вопросы по вашей базе знаний, записывает на встречу. Менеджер получает уведомление только о горячих.</div>
+        <div class="uc-result">↑ Конверсия растёт, менеджер не выгорает</div>
       </div>
     </div>
     <div class="uc-item">
       <div class="uc-n">04</div>
-      <div class="uc-body">
+      <div>
         <div class="uc-title">Синхронизация Ozon / WB / 1С</div>
-        <div class="uc-text">Остатки и цены из вашей учётной системы обновляются на всех маркетплейсах автоматически. Никаких ручных выгрузок и расхождений в остатках.</div>
+        <div class="uc-text">Остатки и цены из учётной системы обновляются на маркетплейсах автоматически дважды в день. Никаких ручных выгрузок и расхождений.</div>
         <div class="uc-result">↑ Экономия 40+ минут ежедневно</div>
       </div>
     </div>
   </div>
 
-  <!-- FLOW -->
   <div class="flow-wrap rv rv2">
-    <div class="flow-label">// Пример: автоматическая рассылка КП за 5 шагов</div>
+    <div class="flow-label">// Пример: автоматическая рассылка КП</div>
     <div class="flow-row">
       <div class="flow-node t">
-        <div class="flow-node-ico">
-          <svg viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="9" stroke="#6c6cff" stroke-width="1.4"/><path d="M11 7v4l3 2" stroke="#6c6cff" stroke-width="1.4" stroke-linecap="round"/></svg>
-        </div>
+        <div class="flow-node-ico"><svg viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="9" stroke="#6c6cff" stroke-width="1.4"/><path d="M11 7v4l3 2" stroke="#6c6cff" stroke-width="1.4" stroke-linecap="round"/></svg></div>
         <div class="flow-node-title">Триггер</div>
         <div class="flow-node-sub">Новый лид в CRM</div>
       </div>
       <div class="flow-arr">→</div>
       <div class="flow-node">
-        <div class="flow-node-ico">
-          <svg viewBox="0 0 22 22" fill="none"><circle cx="11" cy="9" r="4" stroke="#9a9a9a" stroke-width="1.4"/><path d="M4 19c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#9a9a9a" stroke-width="1.4" stroke-linecap="round"/></svg>
-        </div>
+        <div class="flow-node-ico"><svg viewBox="0 0 22 22" fill="none"><circle cx="11" cy="9" r="4" stroke="#9a9a9a" stroke-width="1.4"/><path d="M4 19c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#9a9a9a" stroke-width="1.4" stroke-linecap="round"/></svg></div>
         <div class="flow-node-title">Парсинг</div>
         <div class="flow-node-sub">Данные компании</div>
       </div>
       <div class="flow-arr">→</div>
       <div class="flow-node">
-        <div class="flow-node-ico">
-          <svg viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="16" height="16" rx="3" stroke="#9a9a9a" stroke-width="1.4"/><path d="M7 11h8M7 7.5h5M7 14.5h3" stroke="#9a9a9a" stroke-width="1.4" stroke-linecap="round"/></svg>
-        </div>
+        <div class="flow-node-ico"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="16" height="16" rx="3" stroke="#9a9a9a" stroke-width="1.4"/><path d="M7 11h8M7 7.5h5M7 14.5h3" stroke="#9a9a9a" stroke-width="1.4" stroke-linecap="round"/></svg></div>
         <div class="flow-node-title">ИИ-текст</div>
         <div class="flow-node-sub">Уникальное КП</div>
       </div>
       <div class="flow-arr">→</div>
       <div class="flow-node">
-        <div class="flow-node-ico">
-          <svg viewBox="0 0 22 22" fill="none"><path d="M3 5h16l-8 8L3 5z" stroke="#9a9a9a" stroke-width="1.4" stroke-linejoin="round"/><path d="M3 5v12h16V5" stroke="#9a9a9a" stroke-width="1.4" stroke-linejoin="round"/></svg>
-        </div>
+        <div class="flow-node-ico"><svg viewBox="0 0 22 22" fill="none"><path d="M3 5h16l-8 8L3 5z" stroke="#9a9a9a" stroke-width="1.4" stroke-linejoin="round"/><path d="M3 5v12h16V5" stroke="#9a9a9a" stroke-width="1.4" stroke-linejoin="round"/></svg></div>
         <div class="flow-node-title">Отправка</div>
         <div class="flow-node-sub">Email + Telegram</div>
       </div>
       <div class="flow-arr">→</div>
       <div class="flow-node r">
-        <div class="flow-node-ico">
-          <svg viewBox="0 0 22 22" fill="none"><path d="M4 11l5 5 9-9" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
+        <div class="flow-node-ico"><svg viewBox="0 0 22 22" fill="none"><path d="M4 11l5 5 9-9" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="flow-node-title">CRM</div>
         <div class="flow-node-sub">Статус + алерт</div>
       </div>
     </div>
   </div>
 
-  <div class="auto-price rv rv3">
-    <div>
-      <div class="price-label2">Стоимость автоматизации</div>
-      <div class="auto-price-big"><span>от </span>20 000<span> ₽</span></div>
-      <div class="price-note">Зависит от сложности · Под ключ · Обучение включено</div>
+  <div class="auto-pkg-grid rv rv3">
+    <div class="auto-pkg">
+      <div class="auto-pkg-name">Базовая</div>
+      <div class="auto-pkg-price"><span>от </span>20 000<span> ₽</span></div>
+      <div class="auto-pkg-desc">1 автоматизация под ключ. Подходит для одного процесса: рассылка, уведомления, синхронизация.</div>
+      <ul class="auto-pkg-features">
+        <li>Анализ процесса</li>
+        <li>Разработка workflow</li>
+        <li>Запуск и тестирование</li>
+        <li>Поддержка 14 дней</li>
+      </ul>
     </div>
-    <div class="price-list">
-      <div class="price-li">Анализ ваших процессов</div>
-      <div class="price-li">Разработка и настройка workflow</div>
-      <div class="price-li">Тестирование и запуск</div>
-      <div class="price-li">Поддержка 30 дней</div>
+    <div class="auto-pkg hot">
+      <div class="auto-pkg-name">Комплексная</div>
+      <div class="auto-pkg-price"><span>от </span>45 000<span> ₽</span></div>
+      <div class="auto-pkg-desc">3–5 связанных автоматизаций. Полная экосистема: лид → КП → CRM → уведомление → отчёт.</div>
+      <ul class="auto-pkg-features">
+        <li>Аудит всех процессов</li>
+        <li>До 5 workflow</li>
+        <li>Интеграция с CRM / 1С</li>
+        <li>Поддержка 30 дней</li>
+      </ul>
     </div>
-    <a href="#contact" class="btn-o">Автоматизировать бизнес</a>
+    <div class="auto-pkg">
+      <div class="auto-pkg-name">Под запрос</div>
+      <div class="auto-pkg-price">Цена<span> по ТЗ</span></div>
+      <div class="auto-pkg-desc">Нестандартные задачи. Обсуждаем детали — называю точную стоимость без скрытых доплат.</div>
+      <ul class="auto-pkg-features">
+        <li>Любая сложность</li>
+        <li>Фиксированная цена в договоре</li>
+        <li>Обучение команды</li>
+        <li>Поддержка по договорённости</li>
+      </ul>
+    </div>
   </div>
 </section>
 
 <div class="divider"></div>
 
-<!-- ══ SECTION 3: AI ASSISTANT ══ -->
+<!-- ══ SECTION 3: AI ══ -->
 <section id="assistant">
   <div class="ai-glow"></div>
 
   <div class="s3-header rv">
     <div class="sec-num">// 03</div>
-    <h2 class="sec-h">ИИ-АССИСТЕНТ —<br>ЕДИНСТВЕННЫЙ СПОСОБ<br><em>ПОБЕДИТЬ В 2026</em></h2>
-    <p class="s3-hook">
-      Не потому что модно. А потому что <strong>скорость стала оружием.</strong> Тот кто тестирует 10 идей в месяц — выигрывает у того кто тестирует одну. Разрыв только растёт.
-    </p>
+    <h2 class="sec-h">ИИ-АССИСТЕНТ —<br>ЕДИНСТВЕННЫЙ ПУТЬ<br><em>ПОБЕДИТЬ В 2026</em></h2>
+    <p class="s3-hook">Не потому что модно. Потому что <strong>скорость стала оружием.</strong> Тот кто тестирует 10 идей в месяц — выигрывает у того кто тестирует одну. И разрыв только растёт.</p>
   </div>
 
-  <!-- VS -->
   <div class="vs-wrap rv">
     <div class="vs-col lose">
       <div class="vs-who bad">Вы — без ИИ</div>
       <div class="vs-steps">
         <div class="vs-step">
-          <div class="vs-step-track"><div class="vs-dot"></div><div class="vs-line"></div></div>
-          <div class="vs-step-body">
-            <div class="vs-step-title">Придумал нишу. Начал исследовать рынок вручную</div>
-            <div class="vs-step-time slow">День 1–3</div>
-          </div>
+          <div class="vs-track"><div class="vs-dot"></div><div class="vs-ln"></div></div>
+          <div class="vs-body"><div class="vs-title">Придумал нишу. Начал исследовать рынок вручную</div><div class="vs-time slow">День 1–3</div></div>
         </div>
         <div class="vs-step">
-          <div class="vs-step-track"><div class="vs-dot"></div><div class="vs-line"></div></div>
-          <div class="vs-step-body">
-            <div class="vs-step-title">Сделал сайт сам или заказал — ждёшь, правишь</div>
-            <div class="vs-step-time slow">День 4–18</div>
-          </div>
+          <div class="vs-track"><div class="vs-dot"></div><div class="vs-ln"></div></div>
+          <div class="vs-body"><div class="vs-title">Сделал сайт сам или ждёшь студию — согласования, правки</div><div class="vs-time slow">День 4–18</div></div>
         </div>
         <div class="vs-step">
-          <div class="vs-step-track"><div class="vs-dot"></div><div class="vs-line"></div></div>
-          <div class="vs-step-body">
-            <div class="vs-step-title">Написал тексты, настроил рекламу, запустил</div>
-            <div class="vs-step-time slow">День 19–28</div>
-          </div>
+          <div class="vs-track"><div class="vs-dot"></div><div class="vs-ln"></div></div>
+          <div class="vs-body"><div class="vs-title">Написал тексты, настроил рекламу, запустил</div><div class="vs-time slow">День 19–28</div></div>
         </div>
         <div class="vs-step">
-          <div class="vs-step-track"><div class="vs-dot"></div></div>
-          <div class="vs-step-body">
-            <div class="vs-step-title">Ниша не выстрелила. Начинаешь заново</div>
-            <div class="vs-step-time slow">День 30 — месяц потерян</div>
-          </div>
+          <div class="vs-track"><div class="vs-dot"></div></div>
+          <div class="vs-body"><div class="vs-title">Ниша не выстрелила. Месяц потрачен. Начинаешь заново</div><div class="vs-time slow">День 30</div></div>
         </div>
       </div>
       <div class="vs-outcome">
-        <div class="vs-outcome-bad">✗ Протестирована 1 идея за месяц.<br>Результат — ноль. Время — потеряно.</div>
+        <div class="vs-bad">✗ 1 идея за месяц. Результат — ноль.<br>Время и деньги — потеряны.</div>
       </div>
     </div>
-
-    <div class="vs-mid"><div class="vs-vs-text">VS</div></div>
-
-    <div class="vs-col win2">
+    <div class="vs-mid"><div class="vs-vs">VS</div></div>
+    <div class="vs-col win">
       <div class="vs-who good">Конкурент — с ИИ</div>
       <div class="vs-steps">
         <div class="vs-step">
-          <div class="vs-step-track"><div class="vs-dot g"></div><div class="vs-line"></div></div>
-          <div class="vs-step-body">
-            <div class="vs-step-title">Идея → ИИ за 2 часа сделал анализ рынка, конкурентов, аудитории</div>
-            <div class="vs-step-time fast">День 1, утро</div>
-          </div>
+          <div class="vs-track"><div class="vs-dot g"></div><div class="vs-ln"></div></div>
+          <div class="vs-body"><div class="vs-title">Идея → ИИ за 2 часа сделал анализ рынка, конкурентов, аудитории</div><div class="vs-time fast">День 1, утро</div></div>
         </div>
         <div class="vs-step">
-          <div class="vs-step-track"><div class="vs-dot g"></div><div class="vs-line"></div></div>
-          <div class="vs-step-body">
-            <div class="vs-step-title">Сайт + тексты + реклама — всё сгенерировано и запущено</div>
-            <div class="vs-step-time fast">День 1, вечер</div>
-          </div>
+          <div class="vs-track"><div class="vs-dot g"></div><div class="vs-ln"></div></div>
+          <div class="vs-body"><div class="vs-title">Сайт + тексты + рекламные объявления — сгенерированы и запущены</div><div class="vs-time fast">День 1, вечер</div></div>
         </div>
         <div class="vs-step">
-          <div class="vs-step-track"><div class="vs-dot g"></div><div class="vs-line"></div></div>
-          <div class="vs-step-body">
-            <div class="vs-step-title">Ниша 1 не выстрелила — уже запущены ниши 2, 3, 4, 5...</div>
-            <div class="vs-step-time fast">День 3–20</div>
-          </div>
+          <div class="vs-track"><div class="vs-dot g"></div><div class="vs-ln"></div></div>
+          <div class="vs-body"><div class="vs-title">Ниша 1 не выстрелила → уже запущены 2, 3, 4, 5...</div><div class="vs-time fast">День 3–20</div></div>
         </div>
         <div class="vs-step">
-          <div class="vs-step-track"><div class="vs-dot g"></div></div>
-          <div class="vs-step-body">
-            <div class="vs-step-title">2 из 10 выстрелили. Масштабирует победителей</div>
-            <div class="vs-step-time fast">День 30 — 2 работающих бизнеса</div>
-          </div>
+          <div class="vs-track"><div class="vs-dot g"></div></div>
+          <div class="vs-body"><div class="vs-title">2 из 10 выстрелили. Масштабирует победителей</div><div class="vs-time fast">День 30 — 2 работающих бизнеса</div></div>
         </div>
       </div>
       <div class="vs-outcome">
-        <div class="vs-outcome-good">✓ Протестировано 10 идей.<br>2 в прибыли. Он уже оторвался — навсегда.</div>
+        <div class="vs-good">✓ 10 идей за месяц. 2 в прибыли.<br>Он уже оторвался — и разрыв только растёт.</div>
       </div>
     </div>
   </div>
 
-  <!-- CALLOUT -->
-  <div class="callout rv" style="border-left-color: var(--accent2); background: rgba(0,229,160,.05);">
-    <div class="callout-text" style="color:var(--muted2)">
-      Ты можешь не верить в ИИ. Но твой конкурент <strong style="color:var(--accent2)">уже верит — и уже использует.</strong> Пока ты решаешь, он отрывается.
+  <div class="callout green rv">
+    <div class="callout-text">
+      Ты можешь не верить в ИИ. Но твой конкурент <strong>уже верит — и уже использует.</strong> Пока ты решаешь, он отрывается.
     </div>
   </div>
 
   <div class="feat-grid rv rv1">
     <div class="feat-item">
-      <div class="feat-ico">
-        <svg viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="18" stroke="#00e5a0" stroke-width="1.5"/><path d="M14 22c0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 8-8 8" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round"/><circle cx="22" cy="22" r="3" fill="#00e5a0" opacity=".4"/></svg>
-      </div>
+      <div class="feat-ico"><svg viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="18" stroke="#00e5a0" stroke-width="1.5"/><path d="M14 22c0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 8-8 8" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round"/><circle cx="22" cy="22" r="3" fill="#00e5a0" opacity=".4"/></svg></div>
       <div class="feat-title">Заточен под вас, не под всех</div>
       <div class="feat-text">Не ChatGPT из коробки. Настраиваю ассистента под ваш стиль, вашу базу знаний, ваши задачи. Он знает ваш бизнес — и отвечает как вы.</div>
     </div>
     <div class="feat-item">
-      <div class="feat-ico">
-        <svg viewBox="0 0 44 44" fill="none"><path d="M8 22h4M32 22h4M22 8v4M22 32v4" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round"/><circle cx="22" cy="22" r="8" stroke="#00e5a0" stroke-width="1.5"/><path d="M16 16l4 4M24 24l4 4M28 16l-4 4M20 24l-4 4" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" opacity=".4"/></svg>
-      </div>
+      <div class="feat-ico"><svg viewBox="0 0 44 44" fill="none"><path d="M8 22h4M32 22h4M22 8v4M22 32v4" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round"/><circle cx="22" cy="22" r="8" stroke="#00e5a0" stroke-width="1.5"/><path d="M16 16l4 4M24 24l4 4M28 16l-4 4M20 24l-4 4" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" opacity=".4"/></svg></div>
       <div class="feat-title">Скорость — это теперь оружие</div>
-      <div class="feat-text">Сайт за день. Анализ рынка за час. Десять вариантов текста за минуту. Пока вы думаете над одним решением — с ИИ вы уже тестируете следующее.</div>
+      <div class="feat-text">Сайт за день. Анализ рынка за час. Десять вариантов текста за минуту. Пока конкуренты думают — вы уже тестируете следующее.</div>
     </div>
     <div class="feat-item">
-      <div class="feat-ico">
-        <svg viewBox="0 0 44 44" fill="none"><rect x="8" y="12" width="28" height="20" rx="3" stroke="#00e5a0" stroke-width="1.5"/><path d="M16 20h12M16 26h8" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round"/><path d="M22 6v6M22 38v-6" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" opacity=".4"/></svg>
-      </div>
+      <div class="feat-ico"><svg viewBox="0 0 44 44" fill="none"><rect x="8" y="12" width="28" height="20" rx="3" stroke="#00e5a0" stroke-width="1.5"/><path d="M16 20h12M16 26h8" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round"/><path d="M22 6v6M22 38v-6" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" opacity=".4"/></svg></div>
       <div class="feat-title">Ваши данные — у вас</div>
-      <div class="feat-text">Не SaaS с лимитами и подписками. Кастомный инструмент на вашем сервере. Логика под ваши процессы. Никаких неожиданных ценников.</div>
+      <div class="feat-text">Не SaaS с лимитами и подписками. Кастомный инструмент на вашем сервере. Никаких внезапных ценников и зависимости от чужих платформ.</div>
     </div>
   </div>
 
-  <div class="ai-price rv rv2">
-    <div>
-      <div class="price-label2">Настройка ИИ-ассистента</div>
-      <div class="ai-price-big"><span>от </span>25 000<span> ₽</span></div>
-      <div class="price-note">Разовая настройка · Обучение · Поддержка 1 месяц</div>
+  <div class="ai-pkg-grid rv rv2">
+    <div class="ai-pkg">
+      <div class="ai-pkg-name">Базовый ассистент</div>
+      <div class="ai-pkg-price"><span>от </span>25 000<span> ₽</span></div>
+      <div class="ai-pkg-desc">Персональный ИИ для одного человека. Отвечает на вопросы по вашей базе знаний, помогает с текстами, анализом, задачами.</div>
+      <ul class="ai-pkg-list">
+        <li>Анализ ваших задач</li>
+        <li>Настройка базы знаний</li>
+        <li>Интерфейс в Telegram или браузере</li>
+        <li>Обучение работе</li>
+        <li>Поддержка 30 дней</li>
+      </ul>
+      <a href="#contact" class="pkg-btn" style="display:block;text-align:center;font-family:'Space Mono';font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:13px;border:1px solid rgba(255,255,255,.12);color:var(--text);text-decoration:none;transition:all .2s;cursor:none;">Выбрать</a>
     </div>
-    <div class="price-list">
-      <div class="price-li">Анализ ваших задач и процессов</div>
-      <div class="price-li">Настройка под бизнес</div>
-      <div class="price-li">Обучение команды работе</div>
-      <div class="price-li">Интеграция с вашими инструментами</div>
+    <div class="ai-pkg hot">
+      <div class="ai-pkg-name">Бизнес-ассистент</div>
+      <div class="ai-pkg-price"><span>от </span>50 000<span> ₽</span></div>
+      <div class="ai-pkg-desc">ИИ для всей команды. Знает ваши процессы, обрабатывает заявки, квалифицирует лидов, генерирует отчёты, отвечает клиентам.</div>
+      <ul class="ai-pkg-list">
+        <li>Аудит процессов компании</li>
+        <li>Несколько сценариев использования</li>
+        <li>Интеграция с CRM / Telegram / сайтом</li>
+        <li>Обучение всей команды</li>
+        <li>Поддержка 60 дней</li>
+        <li>Обновление базы знаний</li>
+      </ul>
+      <a href="#contact" class="pkg-btn" style="display:block;text-align:center;font-family:'Space Mono';font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:13px;background:var(--green);color:#000;font-weight:700;text-decoration:none;transition:all .2s;cursor:none;">Выбрать</a>
     </div>
-    <a href="#contact" class="btn-r">Хочу ИИ-ассистента</a>
   </div>
 </section>
 
@@ -778,31 +1023,75 @@
 <!-- ══ CONTACT ══ -->
 <section id="contact">
   <div class="contact-glow"></div>
-  <div class="contact-inner rv">
-    <div class="contact-eyebrow">Начать работу</div>
-    <h2 class="contact-h">ПОРА <em>ДЕЙСТВОВАТЬ</em></h2>
-    <p class="contact-sub">
-      Расскажите о задаче — <strong>без лишних презентаций.</strong> Разберём что нужно, назову цену и сроки. Первый ответ — в течение часа.
-    </p>
-    <div class="contact-links">
-      <a href="https://t.me/username" class="c-link">
-        <svg viewBox="0 0 16 16" fill="none"><path d="M2 8l11-5-4 13-3-5-4-3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
-        Telegram
-      </a>
-      <a href="https://vk.com/username" class="c-link">
-        <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M4 8c0 0 1 2 4 2s4-2 4-2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-        ВКонтакте
-      </a>
-      <a href="mailto:hello@example.com" class="c-link">
-        <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 5l7 5 7-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-        Email
-      </a>
+  <div class="contact-wrap rv">
+    <div class="contact-left">
+      <div class="contact-eyebrow">Начать работу</div>
+      <h2 class="contact-h">ПОРА<br><em>ДЕЙСТВОВАТЬ</em></h2>
+      <p class="contact-sub">
+        Расскажите о задаче — <strong>без лишних презентаций.</strong> Разберём что нужно, назову цену и сроки честно.
+      </p>
+      <div class="contact-hook">
+        Напишите <strong>«САЙТ»</strong> — и я пришлю 3 примера из вашей ниши бесплатно. Или просто напишите <strong>«привет»</strong> — разберёмся вместе.
+      </div>
+      <div class="contact-links">
+        <a href="https://t.me/username" class="c-link">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M2 8l11-5-4 13-3-5-4-3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+          Telegram
+          <span class="c-link-sub">Быстрее всего</span>
+        </a>
+        <a href="https://vk.com/username" class="c-link">
+          <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M4 8c0 0 1 2 4 2s4-2 4-2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          ВКонтакте
+          <span class="c-link-sub">Отвечу в день</span>
+        </a>
+        <a href="tel:+7XXXXXXXXXX" class="c-link">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M4 2h3l1.5 3.5-2 1.5a8 8 0 003.5 3.5L11.5 8.5 15 10v3a1 1 0 01-1 1C7 14 2 9 2 3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+          +7 (XXX) XXX-XX-XX
+          <span class="c-link-sub">Звонки · Пн–Пт</span>
+        </a>
+      </div>
     </div>
-    <div class="contact-promise">
-      <div class="cp-item">Отвечу в течение часа</div>
-      <div class="cp-item">Никаких скрытых платежей</div>
-      <div class="cp-item">Покажу примеры из вашей ниши</div>
+    <div class="contact-right">
+      <div class="form-title">Оставить заявку</div>
+      <div id="formWrap">
+        <div class="form-group">
+          <label class="form-label">Ваше имя</label>
+          <input type="text" class="form-input" placeholder="Как к вам обращаться" id="fName">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Telegram или телефон</label>
+          <input type="text" class="form-input" placeholder="@username или +7..." id="fContact">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Что нужно?</label>
+          <select class="form-select" id="fService">
+            <option value="" disabled selected>Выберите услугу</option>
+            <option>Сайт / лендинг</option>
+            <option>n8n автоматизация</option>
+            <option>ИИ-ассистент</option>
+            <option>Несколько услуг</option>
+            <option>Не знаю — хочу обсудить</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Коротко о задаче</label>
+          <textarea class="form-textarea" placeholder="Что хотите получить в итоге? Не нужно писать много — 1–2 предложения" id="fTask"></textarea>
+        </div>
+        <div class="form-note">Нажимая кнопку, вы соглашаетесь на обработку данных для ответа на заявку.</div>
+        <button class="form-submit" onclick="submitForm()">Отправить заявку →</button>
+      </div>
+      <div class="form-success" id="formSuccess">
+        <div class="form-success-icon">✓</div>
+        <div class="form-success-title">Заявка принята!</div>
+        <div class="form-success-text">Отвечу в Telegram или по телефону в течение часа.<br>Если срочно — напишите напрямую: <strong>@username</strong></div>
+      </div>
     </div>
+  </div>
+  <div class="contact-promises rv rv1">
+    <div class="cp">Ответ в течение часа</div>
+    <div class="cp">Никаких скрытых платежей</div>
+    <div class="cp">Покажу примеры из вашей ниши</div>
+    <div class="cp">Фиксированная цена в договоре</div>
   </div>
 </section>
 
@@ -812,31 +1101,239 @@
 </footer>
 
 <script>
-  // Cursor
-  const cur = document.getElementById('cur');
-  const ring = document.getElementById('curRing');
-  let mx=0,my=0,rx=0,ry=0;
-  document.addEventListener('mousemove',e=>{
-    mx=e.clientX; my=e.clientY;
-    cur.style.left=mx+'px'; cur.style.top=my+'px';
-  });
-  (function anim(){
-    rx+=(mx-rx)*.11; ry+=(my-ry)*.11;
-    ring.style.left=rx+'px'; ring.style.top=ry+'px';
-    requestAnimationFrame(anim);
-  })();
-  document.querySelectorAll('a,button,.pain-card,.uc-item,.feat-item,.compare-col,.roi-cell').forEach(el=>{
-    el.addEventListener('mouseenter',()=>{ cur.style.transform='translate(-50%,-50%) scale(2.2)'; ring.style.width='58px'; ring.style.height='58px'; });
-    el.addEventListener('mouseleave',()=>{ cur.style.transform='translate(-50%,-50%) scale(1)'; ring.style.width='34px'; ring.style.height='34px'; });
-  });
+// Cursor
+const cur=document.getElementById('cur'),ring=document.getElementById('curRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{ mx=e.clientX; my=e.clientY; cur.style.left=mx+'px'; cur.style.top=my+'px'; });
+(function anim(){ rx+=(mx-rx)*.11; ry+=(my-ry)*.11; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(anim); })();
+document.querySelectorAll('a,button,.pain-card,.uc-item,.feat-item,.compare-col,.roi-cell,.pkg,.auto-pkg,.ai-pkg,.case-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ cur.style.transform='translate(-50%,-50%) scale(2.2)'; ring.style.width='56px'; ring.style.height='56px'; });
+  el.addEventListener('mouseleave',()=>{ cur.style.transform='translate(-50%,-50%) scale(1)'; ring.style.width='34px'; ring.style.height='34px'; });
+});
 
-  // Nav
-  const nav=document.getElementById('nav');
-  window.addEventListener('scroll',()=>{ nav.classList.toggle('scrolled',scrollY>60); });
+// Nav
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>60));
 
-  // Reveal
-  const obs=new IntersectionObserver(ents=>{ ents.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('on'); }); },{threshold:.1});
-  document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
+// Reveal
+const obs=new IntersectionObserver(e=>e.forEach(x=>{ if(x.isIntersecting) x.target.classList.add('on'); }),{threshold:.08});
+document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
+
+// Form
+function submitForm(){
+  const name=document.getElementById('fName').value.trim();
+  const contact=document.getElementById('fContact').value.trim();
+  const service=document.getElementById('fService').value;
+  if(!name||!contact||!service){ 
+    document.getElementById('fName').style.borderColor=name?'var(--border)':'rgba(255,60,0,.6)';
+    document.getElementById('fContact').style.borderColor=contact?'var(--border)':'rgba(255,60,0,.6)';
+    document.getElementById('fService').style.borderColor=service?'var(--border)':'rgba(255,60,0,.6)';
+    return; 
+  }
+  document.getElementById('formWrap').style.display='none';
+  document.getElementById('formSuccess').style.display='block';
+  // Also send to Telegram
+  const name2=document.getElementById('fName').value.trim();
+  const contact2=document.getElementById('fContact').value.trim();
+  const service2=document.getElementById('fService').value;
+  const task2=document.getElementById('fTask').value.trim();
+  sendToTelegram(`📋 НОВАЯ ЗАЯВКА С ФОРМЫ\n\n👤 Имя: ${name2}\n📱 Контакт: ${contact2}\n🎯 Услуга: ${service2}\n📝 Задача: ${task2||'—'}`);
+}
+
+// ══════════════════════════════════════════
+// TELEGRAM SENDER
+// ══════════════════════════════════════════
+const TG_TOKEN = '8665881249:AAHdzJQ-cRRIXzuGdCjulejt7UzjFc7D9nQ';
+const TG_CHAT  = '1616181469';
+
+async function sendToTelegram(text){
+  try {
+    await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ chat_id: TG_CHAT, text, parse_mode:'HTML' })
+    });
+  } catch(e){ console.warn('TG error',e); }
+}
+
+// ══════════════════════════════════════════
+// CHAT ENGINE
+// ══════════════════════════════════════════
+const OR_KEY   = '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';
+const OR_MODEL = 'google/gemma-3-4b-it:free';
+
+const SYSTEM_PROMPT = `Ты — продвинутый продажник и бизнес-аналитик. Работаешь на фрилансера который делает:
+1. Продающие лендинги и сайты с нуля (не шаблоны) — от 15 000 ₽
+2. n8n автоматизации бизнес-процессов (рассылки КП, боты, CRM интеграции, контент-заводы) — от 20 000 ₽
+3. Кастомные ИИ-ассистенты под бизнес (Telegram-боты, помощники по базе знаний) — от 25 000 ₽
+
+ТВОЯ ЗАДАЧА: за диалог выяснить у клиента:
+— Что за бизнес/проект (ниша, продукт)
+— Есть ли сайт сейчас, как выглядит, сколько приносит заявок
+— Какие процессы повторяются и сколько времени съедают
+— Хочет ли автоматизацию, ИИ, или просто сайт
+— Что главная боль прямо сейчас
+
+ПРАВИЛА:
+- Пиши живо, по-русски, без официоза
+- Задавай ОДИН вопрос за раз — не засыпай вопросами
+- После 4-5 вопросов мягко попроси контакты: "Слушай, у меня уже есть идеи что тебе подойдёт — давай я напишу лично, как тебя найти в Telegram?"
+- Если сам спросит цену — называй диапазоны, не уходи от ответа
+- Если клиент не из бизнеса (студент, фрилансер, физлицо) — всё равно помоги найти применение: личный ассистент, сайт-портфолио
+- Веди диалог как умный друг который разбирается в теме, а не как бот
+- Ответы короткие — 1-3 предложения максимум
+- Не используй emoji в избытке — максимум 1 на сообщение`;
+
+let chatHistory = [];
+let chatCount = 0;
+const MAX_CHAT = 10;
+let contactCollected = false;
+let conversationSummary = '';
+
+function addMessage(role, text) {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  const avatar = role === 'bot' ? 'AI' : 'ВЫ';
+  div.innerHTML = `
+    <div class="msg-avatar">${avatar}</div>
+    <div class="msg-bubble">${text.replace(/\n/g,'<br>')}</div>
+  `;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping() {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg bot';
+  div.id = 'typingIndicator';
+  div.innerHTML = `<div class="msg-avatar">AI</div><div class="msg-bubble msg-typing"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function hideTyping() {
+  const t = document.getElementById('typingIndicator');
+  if(t) t.remove();
+}
+
+function updateCounter() {
+  const left = MAX_CHAT - chatCount;
+  const el = document.getElementById('chatCounter');
+  if(!el) return;
+  el.textContent = left;
+  if(left <= 3) el.classList.add('warn');
+  if(left <= 0) {
+    document.getElementById('chatLimitOverlay').classList.add('show');
+    document.getElementById('chatInput').disabled = true;
+    document.getElementById('chatSend').disabled = true;
+    if(!contactCollected && conversationSummary) {
+      sendToTelegram(`⚠️ ЛИМИТ ЧАТА ИСЧЕРПАН\n\nКлиент провёл 10 сообщений но не оставил контакты.\n\n📝 Краткое содержание диалога:\n${conversationSummary}`);
+    }
+  }
+}
+
+async function getBotReply(userMsg) {
+  chatHistory.push({ role: 'user', content: userMsg });
+  
+  // Build summary for telegram
+  conversationSummary = chatHistory
+    .filter(m => m.role === 'user')
+    .map((m,i) => `${i+1}. ${m.content}`)
+    .join('\n');
+
+  showTyping();
+  document.getElementById('chatSend').disabled = true;
+
+  try {
+    const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OR_KEY}`,
+        'HTTP-Referer': window.location.href,
+        'X-Title': 'MAKE Landing Chat'
+      },
+      body: JSON.stringify({
+        model: OR_MODEL,
+        max_tokens: 300,
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          ...chatHistory
+        ]
+      })
+    });
+
+    const data = await resp.json();
+    hideTyping();
+
+    const reply = data?.choices?.[0]?.message?.content || 'Не смог получить ответ. Попробуй ещё раз или напиши напрямую в Telegram.';
+    chatHistory.push({ role: 'assistant', content: reply });
+    addMessage('bot', reply);
+
+    // Check if contact was mentioned
+    const contactKeywords = ['telegram', 'тг', 'телефон', '@', '+7', 'написать', 'связаться'];
+    if(contactKeywords.some(k => userMsg.toLowerCase().includes(k))) {
+      contactCollected = true;
+      // Send full chat to TG
+      const fullChat = chatHistory.map(m => `${m.role==='user'?'👤 Клиент':'🤖 Бот'}: ${m.content}`).join('\n\n');
+      sendToTelegram(`✅ КЛИЕНТ ОСТАВИЛ КОНТАКТ В ЧАТЕ\n\n📱 Сообщение: "${userMsg}"\n\n📝 Весь диалог:\n${fullChat}`);
+    }
+
+  } catch(e) {
+    hideTyping();
+    addMessage('bot', 'Что-то пошло не так с соединением. Напиши мне напрямую в Telegram — отвечу быстро!');
+  }
+
+  document.getElementById('chatSend').disabled = false;
+  chatCount++;
+  updateCounter();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text || chatCount >= MAX_CHAT) return;
+  input.value = '';
+  input.style.height = '46px';
+  addMessage('user', text);
+  await getBotReply(text);
+}
+
+// Overlay contact form submit
+async function submitCLO() {
+  const name = document.getElementById('cloName').value.trim();
+  const contact = document.getElementById('cloContact').value.trim();
+  if(!name || !contact) {
+    document.getElementById('cloName').style.borderColor = name ? 'var(--border)' : 'rgba(255,60,0,.6)';
+    document.getElementById('cloContact').style.borderColor = contact ? 'var(--border)' : 'rgba(255,60,0,.6)';
+    return;
+  }
+  const fullChat = chatHistory.length
+    ? '\n\n📝 Диалог:\n' + chatHistory.map(m=>`${m.role==='user'?'👤':'🤖'}: ${m.content}`).join('\n')
+    : '';
+  await sendToTelegram(`🔥 КОНТАКТ ИЗ ЧАТА (после лимита)\n\n👤 Имя: ${name}\n📱 Контакт: ${contact}${fullChat}`);
+  document.getElementById('cloForm').style.display = 'none';
+  document.getElementById('cloSuccess').style.display = 'block';
+}
+
+// Enter to send
+document.getElementById('chatInput').addEventListener('keydown', e => {
+  if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+
+// Auto-resize textarea
+document.getElementById('chatInput').addEventListener('input', function() {
+  this.style.height = '46px';
+  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+});
+
+// Init bot greeting
+(async function initChat() {
+  await new Promise(r => setTimeout(r, 800));
+  addMessage('bot', 'Привет! Я помогу разобраться что именно тебе нужно — сайт, автоматизация или ИИ-инструмент.\n\nРасскажи в двух словах: чем занимаешься или что хочешь запустить?');
+})();
 </script>
 </body>
 </html>
